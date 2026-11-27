@@ -1,3 +1,13 @@
+# Protadin Assistant 1.0.6
+
+- **Pre-pull check.** On a ready check or when you enter a dungeon, one chat line tells what's missing: aura, blessing, Righteous Fury or food. Nothing missing - nothing said.
+- **No blinking when nothing can be fixed.** The buff row hides while you're dead, on a flight path or in a vehicle.
+- **New commands.** `/protadin help` lists all commands. `/protadin forget` clears the learned priority.
+- **Copyable debug.** `/protadin debug` opens a window you can copy from, with all buffs on you included.
+- **Camp Benefits works in any client language.** The addon remembers its spell ID once it sees the buff.
+- **Learned priority survives a language switch.** It's stored by spell ID now.
+- **Easy to turn off.** The first priority change after login ends with a link to the options.
+
 # Protadin Assistant 1.0.5
 
 - The option is now called "Chat message when a buff fades", same wording as the chat messages.
