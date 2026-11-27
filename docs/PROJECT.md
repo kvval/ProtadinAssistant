@@ -10,7 +10,7 @@ Current version: **1.0.3** (2026-11-27).
 | Source code | `/mnt/d/VC/paladon/` - the repository root is the addon (toc, lua, Libs) |
 | Installed copy (game) | `C:\WarCraft\World of Warcraft\_forever_\Interface\AddOns\ProtadinAssistant\` - a copy, not a link; run `tools/install.sh` after every change |
 | Release zips | `/mnt/d/VC/paladon/dist/` (latest: `ProtadinAssistant-1.0.3.zip`, must include `Libs/`) |
-| CurseForge page text | `/mnt/d/VC/paladon/curseforge-description.md` |
+| CurseForge page text | `docs/curseforge-description.md` (pasted by hand, the packager doesn't update it) |
 | Changelog for CurseForge | `CHANGELOG.md` (used by the packager) |
 | In-game Lua errors | `_forever_\Logs\General.log`, lines with `[E][Lua]` (written on exit / reload) |
 | Saved settings | `_forever_\WTF\Account\<ACCOUNT>\SavedVariables\ProtadinAssistant.lua` |
@@ -50,7 +50,7 @@ Test character: Lori-Quaid (Protection paladin, English client).
 - Minimap button (embedded LibDBIcon): LMB applies the learned priority, RMB opens options, Shift+LMB locks / unlocks, Shift+RMB resets positions, Ctrl+LMB lists auras, Ctrl+RMB prints debug.
 - Options panel with three bordered sections: General, Buff tracker, Cooldown timeline.
 - Frames are locked by default. While they are unlocked, an 8 px grid is shown and frames snap to it and to the screen centre.
-- Multilingual: spells by ID (`Data.lua`), the interface in 10 languages (`Locales.lua`, key = English text).
+- Multilingual: spells by ID (`Modules/Data.lua`), the interface in 10 languages (`Locales/Locales.lua`, key = English text).
 - Slash commands: `/protadin` (`/pda`) `lock | unlock | reset | auras | debug`.
 
 ## Code layout
@@ -58,17 +58,17 @@ Test character: Lori-Quaid (Protection paladin, English client).
 | File | Role |
 |---|---|
 | `Libs/` | LibStub, CallbackHandler-1.0, LibDataBroker-1.1, LibDBIcon-1.0 (copied from DBM-Core / Masque) |
-| `Locales.lua` | UI strings, `KEYS` list plus one table per locale |
-| `Core.lua` | defaults, SavedVariables, helpers (spellbook, auras, cooldowns, range), movers, grid, slash commands |
-| `Data.lua` | spell / item IDs, localized names, classifiers, XP food detection |
-| `Buffs.lua` | buff tracker |
-| `Timeline.lua` | timeline, suggest next, learned priority |
-| `Options.lua` | options panel |
-| `Minimap.lua` | minimap button |
+| `Locales/Locales.lua` | UI strings, `KEYS` list plus one table per locale |
+| `Modules/Core.lua` | defaults, SavedVariables, helpers (spellbook, auras, cooldowns, range), movers, grid, slash commands |
+| `Modules/Data.lua` | spell / item IDs, localized names, classifiers, XP food detection |
+| `Modules/Buffs.lua` | buff tracker |
+| `Modules/Timeline.lua` | timeline, suggest next, learned priority |
+| `Modules/Options.lua` | options panel |
+| `Modules/Minimap.lua` | minimap button |
 
 ## How we check changes (no game access from here)
 
-1. `luac5.1 -p *.lua` checks the syntax. `luac5.1 -p -l` lists globals and catches accidental `SETGLOBAL`.
+1. `luac5.1 -p Modules/*.lua Locales/*.lua` checks the syntax. `luac5.1 -p -l` lists globals and catches accidental `SETGLOBAL`.
 2. A mock WoW harness (`tools/harness.lua`, see `tools/README.md`) loads the whole addon in `.toc` order and runs the options, timeline, buffs and minimap clicks.
 3. A locale check confirms that every `L[...]` used in the code is in `KEYS` and that every locale has all keys with matching `%s` / `%d`.
 4. Targeted model tests: priority swaps, learned priority (simulated fights), notice throttling, loading screens, food pick, grid snapping.

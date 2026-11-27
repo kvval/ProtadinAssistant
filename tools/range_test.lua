@@ -10,8 +10,8 @@ C_Spell = {
   GetSpellInfo = function(id) return { name = "s" .. id, maxRange = maxR[id], spellID = id } end,
 }
 local ns = {}
-assert(loadfile(arg[1] .. "/Locales.lua"))("x", ns)
-assert(loadfile(arg[1] .. "/Core.lua"))("x", ns)
+assert(loadfile(arg[1] .. "/Locales/Locales.lua"))("x", ns)
+assert(loadfile(arg[1] .. "/Modules/Core.lua"))("x", ns)
 for _, p in ipairs({ {20927,"Holy Shield",true}, {20271,"Judgement",true}, {20922,"Consecration",true}, {5569,"Holy Strike",true}, {10312,"Exorcism",false} }) do
   local got = ns.InRange(p[1])
   print(("%-13s InRange=%-5s expected=%-5s %s"):format(p[2], tostring(got), tostring(p[3]), got == p[3] and "OK" or "FAIL"))

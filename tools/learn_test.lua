@@ -3,7 +3,7 @@ ns.N = { defaultPriority = { "Holy Shield", "Judgement", "Consecration", "Holy S
 ns.defaultTimelineSpells = { ["Holy Shield"]=true, ["Judgement"]=true, ["Consecration"]=true, ["Holy Strike"]=true, ["Exorcism"]=true }
 ns.IsUsable = function() return true end
 ns.InRange = function() return true end
-assert(loadfile(arg[1] .. "/Timeline.lua"))("x", ns)
+assert(loadfile(arg[1] .. "/Modules/Timeline.lua"))("x", ns)
 local T = ns.timeline
 T.RebuildEntries = function() end
 T.db = { spells = {}, priority = {}, learn = { wins = {}, choices = 0 } }

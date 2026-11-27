@@ -16,10 +16,10 @@ Libs\CallbackHandler-1.0\CallbackHandler-1.0.lua
 Libs\LibDataBroker-1.1\LibDataBroker-1.1.lua
 Libs\LibDBIcon-1.0\LibDBIcon-1.0.lua
 
-Locales.lua
-Core.lua
-Data.lua
-Buffs.lua
-Timeline.lua
-Options.lua
-Minimap.lua
+Locales\Locales.lua
+Modules\Core.lua
+Modules\Data.lua
+Modules\Buffs.lua
+Modules\Timeline.lua
+Modules\Options.lua
+Modules\Minimap.lua

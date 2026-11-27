@@ -2,8 +2,8 @@ local dummy = setmetatable({}, { __index = function() return function() end end 
 CreateFrame = function() return dummy end; SlashCmdList = {}; GetLocale = function() return "enUS" end
 UIParent = { GetCenter = function() return 960, 540 end, GetEffectiveScale = function() return 0.8 end }
 local ns = {}
-assert(loadfile(arg[1] .. "/Locales.lua"))("x", ns)
-assert(loadfile(arg[1] .. "/Core.lua"))("x", ns)
+assert(loadfile(arg[1] .. "/Locales/Locales.lua"))("x", ns)
+assert(loadfile(arg[1] .. "/Modules/Core.lua"))("x", ns)
 local function frame(cx, cy, scale)
   local f = { pts = nil }
   f.GetCenter = function() return cx, cy end

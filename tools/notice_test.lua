@@ -5,7 +5,7 @@ local printed = {}
 ns.Print = function(msg) printed[#printed+1] = msg end
 local clock = 1000000
 time = function() return clock end
-assert(loadfile(arg[1] .. "/Timeline.lua"))("x", ns)
+assert(loadfile(arg[1] .. "/Modules/Timeline.lua"))("x", ns)
 local T = ns.timeline
 T.RebuildEntries = function() end
 T.db = { spells = {}, priority = {}, learn = { wins = {}, choices = 0 }, announceStyle = true }

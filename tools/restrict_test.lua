@@ -17,8 +17,8 @@ C_UnitAuras = {
   end,
 }
 local ns = {}
-assert(loadfile(arg[1] .. "/Locales.lua"))("ProtadinAssistant", ns)
-assert(loadfile(arg[1] .. "/Core.lua"))("ProtadinAssistant", ns)
+assert(loadfile(arg[1] .. "/Locales/Locales.lua"))("ProtadinAssistant", ns)
+assert(loadfile(arg[1] .. "/Modules/Core.lua"))("ProtadinAssistant", ns)
 
 local function count() local n = 0; local ok = ns.ForEachPlayerAura(function() n = n + 1 end); return ok, n end
 print("normal:        ", count())                          -- true 2

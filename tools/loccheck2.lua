@@ -2,7 +2,7 @@
 local dir, usedFile = arg[1], arg[2]
 GetLocale = function() return "enUS" end
 local ns = {}
-assert(loadfile(dir .. "/Locales.lua"))("x", ns)
+assert(loadfile(dir .. "/Locales/Locales.lua"))("x", ns)
 local keys = {}
 for _, k in ipairs(ns.LOCALE_KEYS) do keys[k] = true end
 local bad = 0

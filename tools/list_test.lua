@@ -1,7 +1,7 @@
 local ns = { L = setmetatable({}, {__index=function(_,k) return k end}), modules = {} }
 ns.N = { defaultPriority = { "Holy Shield", "Judgement", "Consecration", "Holy Strike", "Exorcism" } }
 ns.defaultTimelineSpells = { ["Holy Shield"]=true, ["Judgement"]=true, ["Consecration"]=true, ["Holy Strike"]=true, ["Exorcism"]=true }
-assert(loadfile(arg[1] .. "/Timeline.lua"))("x", ns)
+assert(loadfile(arg[1] .. "/Modules/Timeline.lua"))("x", ns)
 local T = ns.timeline
 T.RebuildEntries = function() end
 T.db = { spells = {}, priority = {} }

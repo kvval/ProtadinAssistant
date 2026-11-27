@@ -10,6 +10,5 @@ manual-changelog:
 ignore:
   - tools
   - dist
-  - PROJECT.md
+  - docs
   - README.md
-  - curseforge-description.md
