@@ -456,6 +456,7 @@ function T:UpdateVisibility()
 end
 
 function T:OnEvent(event, ...)
+	self.queryTick = (self.queryTick or 0) + 1 -- something changed: ask the client again
 	if event == "PLAYER_REGEN_DISABLED" then
 		self.inCombat = true
 		self.castsSecret = nil
@@ -814,12 +815,31 @@ end
 -- returns: remaining seconds (number; for the seal: time left on it, 0 when no
 -- seal is up = "ready"), or nil + false + durationObject when only fallback B
 -- can show it
+-- The client is asked about cooldowns QUERY_EVERY seconds (and right after any
+-- event), not every frame: each answer is a new table, so asking every frame
+-- made megabytes of garbage a minute. Between queries the remaining time is
+-- worked out from the stored end time.
+local QUERY_EVERY = 0.1
+
 function T:Remaining(e, now)
 	if e.isSeal then
 		if self.sealExpires and self.sealExpires > now then return self.sealExpires - now end
 		return 0
 	end
+	local tick = self.queryTick or 0
+	if e.qTick ~= tick then
+		e.qTick = tick
+		local rem, _, dur = self:QueryRemaining(e, now)
+		e.qSecret = rem == nil
+		e.qDur = dur
+		e.qEnd = rem and now + rem or nil
+	end
+	if e.qSecret then return nil, false, e.qDur end
+	local rem = e.qEnd - now
+	return rem > 0 and rem or 0
+end
 
+function T:QueryRemaining(e, now)
 	local info = ns.GetCooldown(e.id)
 	local start, dur = info and info.startTime, info and info.duration
 	if info and not ns.IsSecret(start) and not ns.IsSecret(dur) then
@@ -830,7 +850,8 @@ function T:Remaining(e, now)
 			self.cd[e.name] = nil
 			return 0
 		end
-		self.cd[e.name] = { start = start, dur = dur }
+		local c = self.cd[e.name]
+		if c then c.start, c.dur = start, dur else self.cd[e.name] = { start = start, dur = dur } end
 		local learned = self.db.learned[e.name]
 		if not learned or math.abs(learned - dur) > 0.05 then
 			self.db.learned[e.name] = math.floor(dur * 10 + 0.5) / 10
@@ -878,15 +899,22 @@ local function SetIconSize(ic, size)
 	end
 end
 
+local justReady = {}
+local function ByX(a, b) return a.x < b.x end
+
 function T:Update()
 	if not self.entries or not self.db.enabled then return end
 	local shown = self.frame:IsShown()
 	local db = self.db
 	local now, S, H = GetTime(), db.iconSize, db.horizon
 	local SOON = 1.5 -- one global cooldown
+	if now - (self.lastQuery or 0) >= QUERY_EVERY then
+		self.lastQuery = now
+		self.queryTick = (self.queryTick or 0) + 1
+	end
 	wipe(moving)
+	wipe(justReady)
 	local nextEntry
-	local justReady = {}
 
 	for i, e in ipairs(self.entries) do
 		local ic = self.icons[i]
@@ -923,11 +951,13 @@ function T:Update()
 			-- entries are in priority order: the first usable ready one is "press this"
 			-- (the seal: whenever no seal is up)
 			if not nextEntry then
-				if e.isSeal then
-					if not e.id or ns.IsUsable(e.id) then nextEntry = e end
-				elseif ns.IsUsable(e.id) and ns.InRange(e.id) then
-					nextEntry = e
+				-- asked once per query tick, like cooldowns
+				if e.uTick ~= (self.queryTick or 0) then
+					e.uTick = self.queryTick or 0
+					if e.isSeal then e.uOk = not e.id or ns.IsUsable(e.id)
+					else e.uOk = ns.IsUsable(e.id) and ns.InRange(e.id) end
 				end
+				if e.uOk then nextEntry = e end
 			end
 		else
 			if e.isSeal and self.sealIcon then ic.tex:SetTexture(self.sealIcon) end
@@ -964,7 +994,7 @@ function T:Update()
 
 	-- cooling down: positioned by remaining time; overlapping icons become translucent;
 	-- spells ready within one GCD grow smoothly and their border turns gold ("next up")
-	table.sort(moving, function(a, b) return a.x < b.x end)
+	table.sort(moving, ByX)
 	for k, ic in ipairs(moving) do
 		local far = ic.rem > H
 		local soon = db.highlightSoon and ic.rem <= SOON
@@ -983,7 +1013,8 @@ function T:Update()
 		ic.lastX = x
 		ic:ClearAllPoints()
 		ic:SetPoint("CENTER", self.bar, "LEFT", x, 0)
-		ic.text:SetText(ns.FormatTime(ic.rem))
+		local txt = ns.FormatTime(ic.rem)
+		if ic.lastText ~= txt then ic.lastText = txt; ic.text:SetText(txt) end
 		ic:Show()
 		ic.wasMoving = true
 	end

@@ -300,8 +300,14 @@ function ns.AuraFromPlayer(a)
 	return false
 end
 
--- Minimap tracking types that come from spells: list of { name, icon, active }
+-- Minimap tracking types that come from spells: list of { name, icon, active }.
+-- Built once and kept until tracking or the spellbook changes (the buff
+-- scan asks for it on every aura change).
+local trackingCache
+function ns.InvalidateTracking() trackingCache = nil end
+
 function ns.GetTrackingList()
+	if trackingCache then return trackingCache end
 	local list = {}
 	if C_Minimap and C_Minimap.GetNumTrackingTypes then
 		for i = 1, C_Minimap.GetNumTrackingTypes() do
@@ -327,6 +333,7 @@ function ns.GetTrackingList()
 		end
 		table.sort(list, function(a, b) return a.name < b.name end)
 	end
+	trackingCache = list
 	return list
 end
 

@@ -207,9 +207,10 @@ function B:Enable()
 	end
 	f:SetScript("OnEvent", function(_, event, ...) B:OnEvent(event, ...) end)
 
-	local acc = 0
+	local acc, scanAcc = 0, 0
 	f:SetScript("OnUpdate", function(_, el)
-		acc = acc + el
+		acc, scanAcc = acc + el, scanAcc + el
+		if B.scanDue and scanAcc >= 0.1 then scanAcc = 0; B.scanDue = false; B:Scan() end
 		if acc >= 0.25 then acc = 0; B:UpdateTimers() end
 	end)
 
@@ -373,6 +374,9 @@ function B:OnEvent(event, ...)
 		C_Timer.After(0.5, function() B:UpdateIdle() end)
 		return
 	end
+	if event == "MINIMAP_UPDATE_TRACKING" or event == "SPELLS_CHANGED" or event == "PLAYER_ENTERING_WORLD" then
+		ns.InvalidateTracking()
+	end
 	if event == "BAG_UPDATE_DELAYED" then
 		-- food in the bags changed: pick again (secure button -> out of combat)
 		self:ApplySettings()
@@ -392,7 +396,9 @@ function B:OnEvent(event, ...)
 			self.removedIDs = self.removedIDs or {}
 			for id in pairs(removed) do self.removedIDs[id] = true end
 		end
-		self:Scan()
+		-- auras change in bursts (several events a frame in combat): scan once
+		-- for the whole burst, from OnUpdate
+		self.scanDue = true
 	else
 		self:Scan()
 	end
