@@ -446,7 +446,20 @@ end
 -- Priority from your play
 ---------------------------------------------------------------------------
 T.LEARN_MIN = 20     -- choices needed before an order is offered
-local MIN_PAIR = 3   -- comparisons needed before a pair counts
+local MIN_PAIR = 5   -- (weighted) comparisons needed before a pair counts
+local Z = 1.645      -- ~90% confidence for "this pair has a clear winner"
+local HALF_LIFE = 500 -- choices after which old choices weigh half as much
+local DECAY = 0.5 ^ (1 / HALF_LIFE)
+
+-- lower bound of the Wilson score interval: a win rate we can trust given
+-- how few comparisons there are (6 of 10 -> ~0.34, 378 of 442 -> ~0.83)
+local function WilsonLow(won, n)
+	if n <= 0 then return 0 end
+	local p = won / n
+	local z2 = Z * Z
+	return (p + z2 / (2 * n) - Z * math.sqrt((p * (1 - p) + z2 / (4 * n)) / n)) / (1 + z2 / n)
+end
+T.WilsonLow = WilsonLow
 
 -- a rotation spell was cast in combat: if other rotation spells were ready
 -- too, the player preferred this one over each of them
@@ -469,6 +482,13 @@ function T:LearnFromCast(e, now)
 	if #others == 0 then return end
 	local learn = self.db.learn
 	learn.choices = (learn.choices or 0) + 1
+	-- everything learned so far gets a little older (half weight after HALF_LIFE choices)
+	for _, row in pairs(learn.wins) do
+		for b, v in pairs(row) do
+			v = v * DECAY
+			row[b] = v >= 0.01 and v or nil
+		end
+	end
 	local w = learn.wins[e.name] or {}
 	learn.wins[e.name] = w
 	for _, n in ipairs(others) do w[n] = (w[n] or 0) + 1 end
@@ -476,7 +496,9 @@ end
 
 -- enabled spells ordered by the player's choices; returns names, #choices.
 -- A ranks above B when A was picked over B more often than the reverse
--- (pairs with fewer than MIN_PAIR comparisons don't count); ties fall back
+-- (a pair only counts with at least MIN_PAIR comparisons and a winner whose
+-- Wilson lower bound is above 50%, so a handful of lucky casts can't decide
+-- the order); ties fall back
 -- to the overall win rate, then to the current order.
 function T:LearnedOrder()
 	local learn = self.db.learn
@@ -491,18 +513,18 @@ function T:LearnedOrder()
 		for _, b in ipairs(names) do
 			if a ~= b then
 				local ab, ba = w(a, b), w(b, a)
-				if ab + ba >= MIN_PAIR then
-					if ab > ba then score[a] = score[a] + 1
-					elseif ab == ba then score[a] = score[a] + 0.5 end
+				local n = ab + ba
+				if n >= MIN_PAIR and WilsonLow(ab, n) > 0.5 then
+					score[a] = score[a] + 1
 				end
-				won[a], seen[a] = won[a] + ab, seen[a] + ab + ba
+				won[a], seen[a] = won[a] + ab, seen[a] + n
 			end
 		end
 	end
 	table.sort(names, function(a, b)
 		if score[a] ~= score[b] then return score[a] > score[b] end
-		local ra = seen[a] > 0 and won[a] / seen[a] or 0.5
-		local rb = seen[b] > 0 and won[b] / seen[b] or 0.5
+		local ra = seen[a] > 0 and WilsonLow(won[a], seen[a]) or 0.5
+		local rb = seen[b] > 0 and WilsonLow(won[b], seen[b]) or 0.5
 		if ra ~= rb then return ra > rb end
 		return cur[a] < cur[b]
 	end)

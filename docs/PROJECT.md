@@ -48,7 +48,7 @@ Test character: Lori-Quaid (Protection paladin, English client).
 - **Highlight upcoming:** spells ready within 1.5 s grow smoothly to the "Suggest next" size, the border fades to gold.
 - **Rotation, by prio:** one list of numbered drop-downs (position = priority; "- none -" removes a spell; "+ add a spell" adds one).
 
-**Priority from your play:** records pairwise choices (cast A while B was also ready). After 20 choices it offers an order (Apply / Forget). A chat notice is sent when the order changes noticeably: at most once a day, never twice for the same order, and it can be turned off ("Announce play style change").
+**Priority from your play:** records pairwise choices (cast A while B was also ready). After 20 choices it offers an order (Apply / Forget). Details: casts that just follow the "Suggest next" hint are not learned (else the order confirms itself); every new choice ages old ones (half-life 500 choices); a pair counts only with ≥5 weighted comparisons and a winner whose Wilson lower bound (90%) is above 50%, so a few lucky casts (e.g. Exorcism 6:4) can't decide the order. A chat notice is sent when the order changes noticeably: at most once a day, never twice for the same order, and it can be turned off ("Announce play style change").
 
 **Other:**
 - Minimap button (embedded LibDBIcon): LMB applies the learned priority, RMB opens options, Shift+LMB locks / unlocks, Shift+RMB resets positions, Ctrl+LMB lists auras, Ctrl+RMB prints debug.
@@ -92,7 +92,7 @@ Test character: Lori-Quaid (Protection paladin, English client).
 - **1.0.1:** upcoming spells grow smoothly (0-1.5 s, up to 120%) with a border fading to gold; "Suggest next" icon is 20% bigger with a pulsing gold glow; the ready pop matches the grown size.
 - **1.0.2:** first-run experience: buff tracker defaults to the right side under the minimap; Well Fed / Well-Rested are switched on or off at every login depending on XP food / sleeping bag in the bags; timeline shown always for new installs; one-time welcome + tip about "Only during combat".
 - **1.0.3:** a Well Fed / Well-Rested slot switched by hand in the options is never switched automatically again (foodManual / bagManual). Camp Benefits stays always visible (other players' campfires count too). First release built and uploaded by GitHub Actions.
-- **After 1.0.3 (not released yet):** repository tidied up - code in `Modules/` and `Locales/`, notes in `docs/`.
+- **After 1.0.3 (not released yet):** repository tidied up - code in `Modules/` and `Locales/`, notes in `docs/`. Learned priority: hint-following casts ignored, half-life 500 choices, Wilson confidence threshold (Exorcism no longer jumps to the top on a handful of casts).
 
 ## Releasing (GitHub + CurseForge)
 
