@@ -1,9 +1,6 @@
-# Protadin Assistant 1.0.0
+# Protadin Assistant 1.0.3
 
-First stable release for WoW Forever.
-
-- **Self-buff tracker:** aura, your own blessing, Righteous Fury, minimap tracking, Well Fed, Well-Rested (Cozy Sleeping Bag) and Camp Benefits. A buff that fades or the wrong one being active makes its icon blink and puts one message in chat. Click an icon to fix it: cast the buff, eat your XP food (the one you have the fewest of), use the sleeping bag or a campfire kit.
-- **Cooldown timeline:** a 10-second track for your rotation, with countdowns and a seal tracker. It times cooldowns itself, because the client hides them in combat.
-- **Suggest next:** a gold icon showing the best spell to cast now, picked by your priority list. Spells that don't fit the target (Exorcism on a beast, Hammer of Wrath above 20%) are skipped.
-- **Priority from your play:** learns which spell you pick when several are ready, offers that order, and tells you in chat when your play style changes (at most once a day).
-- **Minimap button** (LibDBIcon), an options panel, an alignment grid for moving frames, and an interface in 10 languages. Works with any client language.
+- Spells that are almost ready now grow smoothly during the last 1.5 s, and their border slowly turns gold. No more jump in size.
+- The "Suggest next" icon is 20% bigger and has a pulsing glow, so it's easier to notice.
+- Well Fed and Well-Rested icons are switched on or off at every login: on if you have XP food / the Cozy Sleeping Bag in your bags, off if you don't. If you switch one of them by hand in the options, the addon leaves it alone.
+- New installs: the buff row sits on the right, under the minimap. The timeline is shown out of combat too, so you can see where it is (switch it to "Only during combat" in the options). One short welcome message in chat on the first login.

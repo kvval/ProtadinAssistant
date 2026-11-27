@@ -23,5 +23,5 @@ jobs:
           # the addon lives in a subfolder of the repository
           args: -t ProtadinAssistant
         env:
-          CF_API_KEY: ${{ secrets.CF_API_KEY }}
+          CF_API_KEY: ${{ secrets.CURSEFORGE }}
           GITHUB_OAUTH: ${{ secrets.GITHUB_TOKEN }}

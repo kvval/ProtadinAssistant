@@ -98,7 +98,7 @@ Repository: https://github.com/kvval/ProtadinAssistant (this whole folder; `dist
 4. Only when the author says so: tag and push the tag, e.g. `git tag v1.0.4 && git push origin v1.0.4`.
 5. GitHub Actions (`.github/workflows/release.yml`) runs the BigWigs packager: it builds the zip and uploads it to CurseForge (project 1826638, from `X-Curse-Project-ID` in the toc) and to GitHub Releases.
 
-Needs the repository secret `CF_API_KEY` (a CurseForge API token, added by the author in GitHub: Settings → Secrets and variables → Actions).
+Needs the repository secret `CURSEFORGE` (a CurseForge API token, passed to the packager as CF_API_KEY, added by the author in GitHub: Settings → Secrets and variables → Actions).
 A tag with `-beta` / `-alpha` makes a beta / alpha release on CurseForge.
 
 ## Open items

@@ -25,21 +25,23 @@ The Forever client hides cooldowns from addons in combat. Protadin Assistant lea
 ## How to start
 
 1. Install, log in on your paladin, play.
-2. To move the frames: Shift + left-click the minimap button and drag them. They snap to a grid and to the screen center. Shift + left-click again to lock them.
-3. Options: right-click the minimap button, or type `/protadin`.
+2. To move the frames: type `/protadin unlock` and drag them. They snap to a grid and to the screen center. Then `/protadin lock`.
+3. Options: `/protadin`, or right-click the minimap button.
 
-## Minimap button
+## Commands
 
-| Click | Action |
+| Command | What it does |
 |---|---|
-| Left-click | apply the priority learned from your play |
-| Right-click | options |
-| Shift + left-click | lock / unlock frames |
-| Shift + right-click | reset positions |
-| Ctrl + left-click | list buffs on you |
-| Ctrl + right-click | debug info |
+| `/protadin` | open the options |
+| `/protadin lock` | lock the frames |
+| `/protadin unlock` | unlock the frames to move them (a grid appears) |
+| `/protadin reset` | put the frames back to their default places |
+| `/protadin auras` | list the buffs on you (handy for bug reports) |
+| `/protadin debug` | diagnostic info (handy for bug reports) |
 
-It works with ElvUI, minimap button collectors and broker bars. You can hide it in the options.
+`/pda` is a short alias for `/protadin`.
+
+The minimap button works with ElvUI, minimap button collectors and broker bars. Hover it to see what each click does. You can hide it in the options.
 
 ## Languages
 
