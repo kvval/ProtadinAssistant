@@ -22,7 +22,6 @@ local KEYS = {
 	"Cooldown timeline", "Show timeline", "Only during combat", "Width",
 	"Suggest next", "Gold icon: the best spell to cast now.",
 	"Highlight upcoming", "Spells ready within 1.5 s grow, so you can plan ahead.",
-	"Track Seal", "Blinks when you have no seal.",
 	"Rotation, by prio", "+ add a spell", "— none —",
 	"From your play:", "Learning from your play: %d of %d choices.", "(same as now)",
 	"Apply", "Forget", "Use this order for the rotation.", "Forget what was learned from your play.",
@@ -34,6 +33,8 @@ local KEYS = {
 	"Protadin Assistant loaded. Right-click the minimap button or type /protadin for options.", "The cooldown timeline is always shown for now. In the options you can show it only during combat.",
 	-- auto adaptation (1.0.4)
 	"Adapt automatically", "After a fight, once 25 new choices are in.", "priority %s.",
+	-- seal as a rotation entry (1.0.4)
+	"Seal (any)",
 }
 
 local T = {}
@@ -69,8 +70,6 @@ T.ruRU = {
 	["Gold icon: the best spell to cast now."] = "Золотая иконка: что лучше всего нажать сейчас.",
 	["Highlight upcoming"] = "Подсвечивать следующие",
 	["Spells ready within 1.5 s grow, so you can plan ahead."] = "Способности, готовые через 1,5 с, увеличиваются — можно планировать заранее.",
-	["Track Seal"] = "Следить за Печатью",
-	["Blinks when you have no seal."] = "Мигает, если печати нет.",
 	["Rotation, by prio"] = "Ротация по приоритету",
 	["+ add a spell"] = "+ добавить способность",
 	["— none —"] = "— нет —",
@@ -109,6 +108,7 @@ T.ruRU = {
 	["Adapt automatically"] = "Подстраиваться автоматически",
 	["After a fight, once 25 new choices are in."] = "После боя, когда наберётся 25 новых выборов.",
 	["priority %s."] = "приоритет: %s.",
+	["Seal (any)"] = "Печать (любая)",
 }
 
 T.deDE = {
@@ -142,8 +142,6 @@ T.deDE = {
 	["Gold icon: the best spell to cast now."] = "Goldenes Symbol: der beste Zauber für jetzt.",
 	["Highlight upcoming"] = "Kommende hervorheben",
 	["Spells ready within 1.5 s grow, so you can plan ahead."] = "Zauber, die in 1,5 s bereit sind, werden größer – so kannst du vorausplanen.",
-	["Track Seal"] = "Siegel verfolgen",
-	["Blinks when you have no seal."] = "Blinkt, wenn du kein Siegel hast.",
 	["Rotation, by prio"] = "Rotation nach Priorität",
 	["+ add a spell"] = "+ Zauber hinzufügen",
 	["— none —"] = "— keine —",
@@ -182,6 +180,7 @@ T.deDE = {
 	["Adapt automatically"] = "Automatisch anpassen",
 	["After a fight, once 25 new choices are in."] = "Nach einem Kampf, sobald 25 neue Entscheidungen vorliegen.",
 	["priority %s."] = "Priorität: %s.",
+	["Seal (any)"] = "Siegel (beliebig)",
 }
 
 T.frFR = {
@@ -215,8 +214,6 @@ T.frFR = {
 	["Gold icon: the best spell to cast now."] = "Icône dorée : le meilleur sort à lancer maintenant.",
 	["Highlight upcoming"] = "Mettre en évidence les prochains",
 	["Spells ready within 1.5 s grow, so you can plan ahead."] = "Les sorts prêts dans 1,5 s grossissent pour anticiper.",
-	["Track Seal"] = "Suivre le Sceau",
-	["Blinks when you have no seal."] = "Clignote quand vous n'avez pas de sceau.",
 	["Rotation, by prio"] = "Rotation, par priorité",
 	["+ add a spell"] = "+ ajouter un sort",
 	["— none —"] = "— aucun —",
@@ -255,6 +252,7 @@ T.frFR = {
 	["Adapt automatically"] = "S'adapter automatiquement",
 	["After a fight, once 25 new choices are in."] = "Après un combat, dès 25 nouveaux choix.",
 	["priority %s."] = "priorité : %s.",
+	["Seal (any)"] = "Sceau (n'importe lequel)",
 }
 
 T.esES = {
@@ -288,8 +286,6 @@ T.esES = {
 	["Gold icon: the best spell to cast now."] = "Icono dorado: el mejor hechizo para lanzar ahora.",
 	["Highlight upcoming"] = "Resaltar próximos",
 	["Spells ready within 1.5 s grow, so you can plan ahead."] = "Los hechizos listos en 1,5 s crecen para que puedas planificar.",
-	["Track Seal"] = "Seguir Sello",
-	["Blinks when you have no seal."] = "Parpadea cuando no tienes sello.",
 	["Rotation, by prio"] = "Rotación por prioridad",
 	["+ add a spell"] = "+ añadir hechizo",
 	["— none —"] = "— ninguno —",
@@ -328,6 +324,7 @@ T.esES = {
 	["Adapt automatically"] = "Adaptarse automáticamente",
 	["After a fight, once 25 new choices are in."] = "Tras un combate, cuando haya 25 elecciones nuevas.",
 	["priority %s."] = "prioridad: %s.",
+	["Seal (any)"] = "Sello (cualquiera)",
 }
 T.esMX = T.esES
 
@@ -362,8 +359,6 @@ T.ptBR = {
 	["Gold icon: the best spell to cast now."] = "Ícone dourado: o melhor feitiço para lançar agora.",
 	["Highlight upcoming"] = "Destacar próximos",
 	["Spells ready within 1.5 s grow, so you can plan ahead."] = "Feitiços prontos em 1,5 s crescem para você se planejar.",
-	["Track Seal"] = "Acompanhar Selo",
-	["Blinks when you have no seal."] = "Pisca quando você está sem selo.",
 	["Rotation, by prio"] = "Rotação por prioridade",
 	["+ add a spell"] = "+ adicionar feitiço",
 	["— none —"] = "— nenhum —",
@@ -402,6 +397,7 @@ T.ptBR = {
 	["Adapt automatically"] = "Adaptar automaticamente",
 	["After a fight, once 25 new choices are in."] = "Depois de um combate, quando houver 25 novas escolhas.",
 	["priority %s."] = "prioridade: %s.",
+	["Seal (any)"] = "Selo (qualquer)",
 }
 
 T.itIT = {
@@ -435,8 +431,6 @@ T.itIT = {
 	["Gold icon: the best spell to cast now."] = "Icona dorata: l'incantesimo migliore da lanciare ora.",
 	["Highlight upcoming"] = "Evidenzia i prossimi",
 	["Spells ready within 1.5 s grow, so you can plan ahead."] = "Gli incantesimi pronti entro 1,5 s si ingrandiscono per pianificare.",
-	["Track Seal"] = "Segui il Sigillo",
-	["Blinks when you have no seal."] = "Lampeggia quando non hai un sigillo.",
 	["Rotation, by prio"] = "Rotazione per priorità",
 	["+ add a spell"] = "+ aggiungi incantesimo",
 	["— none —"] = "— nessuno —",
@@ -475,6 +469,7 @@ T.itIT = {
 	["Adapt automatically"] = "Adatta automaticamente",
 	["After a fight, once 25 new choices are in."] = "Dopo un combattimento, quando ci sono 25 nuove scelte.",
 	["priority %s."] = "priorità: %s.",
+	["Seal (any)"] = "Sigillo (qualsiasi)",
 }
 
 T.koKR = {
@@ -508,8 +503,6 @@ T.koKR = {
 	["Gold icon: the best spell to cast now."] = "금색 아이콘: 지금 시전하기 가장 좋은 주문.",
 	["Highlight upcoming"] = "곧 준비될 주문 강조",
 	["Spells ready within 1.5 s grow, so you can plan ahead."] = "1.5초 안에 준비되는 주문이 커져서 미리 계획할 수 있습니다.",
-	["Track Seal"] = "문장 추적",
-	["Blinks when you have no seal."] = "문장이 없으면 깜박입니다.",
 	["Rotation, by prio"] = "우선순위 로테이션",
 	["+ add a spell"] = "+ 주문 추가",
 	["— none —"] = "— 없음 —",
@@ -548,6 +541,7 @@ T.koKR = {
 	["Adapt automatically"] = "자동으로 조정",
 	["After a fight, once 25 new choices are in."] = "전투 후, 새 선택이 25번 쌓이면.",
 	["priority %s."] = "우선순위: %s.",
+	["Seal (any)"] = "문장 (아무거나)",
 }
 
 T.zhCN = {
@@ -581,8 +575,6 @@ T.zhCN = {
 	["Gold icon: the best spell to cast now."] = "金色图标：现在最该施放的法术。",
 	["Highlight upcoming"] = "突出即将就绪",
 	["Spells ready within 1.5 s grow, so you can plan ahead."] = "1.5秒内就绪的法术会变大，便于提前规划。",
-	["Track Seal"] = "追踪圣印",
-	["Blinks when you have no seal."] = "没有圣印时闪烁。",
 	["Rotation, by prio"] = "按优先级的循环",
 	["+ add a spell"] = "+ 添加法术",
 	["— none —"] = "— 无 —",
@@ -621,6 +613,7 @@ T.zhCN = {
 	["Adapt automatically"] = "自动调整",
 	["After a fight, once 25 new choices are in."] = "战斗结束后，新增 25 次选择时。",
 	["priority %s."] = "优先级：%s。",
+	["Seal (any)"] = "圣印（任意）",
 }
 
 T.zhTW = {
@@ -654,8 +647,6 @@ T.zhTW = {
 	["Gold icon: the best spell to cast now."] = "金色圖示：現在最該施放的法術。",
 	["Highlight upcoming"] = "突顯即將就緒",
 	["Spells ready within 1.5 s grow, so you can plan ahead."] = "1.5秒內就緒的法術會變大，方便提前規劃。",
-	["Track Seal"] = "追蹤聖印",
-	["Blinks when you have no seal."] = "沒有聖印時閃爍。",
 	["Rotation, by prio"] = "依優先順序的循環",
 	["+ add a spell"] = "+ 新增法術",
 	["— none —"] = "— 無 —",
@@ -694,6 +685,7 @@ T.zhTW = {
 	["Adapt automatically"] = "自動調整",
 	["After a fight, once 25 new choices are in."] = "戰鬥結束後，新增 25 次選擇時。",
 	["priority %s."] = "優先順序：%s。",
+	["Seal (any)"] = "聖印（任意）",
 }
 
 local strings = T[GetLocale()]

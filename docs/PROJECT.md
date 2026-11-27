@@ -43,7 +43,7 @@ Test character: Lori-Quaid (Protection paladin, English client).
 - Well Fed / Well-Rested are switched on or off at every login by what's in the bags, unless the player switched them by hand. Camp Benefits is always shown.
 - Default place: right side, under the minimap.
 
-**Cooldown timeline:** a 10 s track, countdowns, a seal tracker (blinks at "now" when no seal), ready spells pop and hide, overlapping icons turn translucent. New installs see it always; "Only during combat" is an option (the welcome message points to it).
+**Cooldown timeline:** a 10 s track, countdowns, ready spells pop and hide, overlapping icons turn translucent. The **seal** is an entry of the rotation list ("Seal (any)", internal key `__seal`, first by default): while a seal is up it travels the track with its time left; with no seal up it counts as "ready" and takes part in Suggest next and learning like any spell. (Until 1.0.3 it was a separate checkbox with a blinking icon at "now".) New installs see it always; "Only during combat" is an option (the welcome message points to it).
 - **Suggest next:** gold icon, 20% bigger, pulsing glow = first ready, usable, in-range spell by priority.
 - **Highlight upcoming:** spells ready within 1.5 s grow smoothly to the "Suggest next" size, the border fades to gold.
 - **Rotation, by prio:** one list of numbered drop-downs (position = priority; "- none -" removes a spell; "+ add a spell" adds one).
@@ -92,7 +92,7 @@ Test character: Lori-Quaid (Protection paladin, English client).
 - **1.0.1:** upcoming spells grow smoothly (0-1.5 s, up to 120%) with a border fading to gold; "Suggest next" icon is 20% bigger with a pulsing gold glow; the ready pop matches the grown size.
 - **1.0.2:** first-run experience: buff tracker defaults to the right side under the minimap; Well Fed / Well-Rested are switched on or off at every login depending on XP food / sleeping bag in the bags; timeline shown always for new installs; one-time welcome + tip about "Only during combat".
 - **1.0.3:** a Well Fed / Well-Rested slot switched by hand in the options is never switched automatically again (foodManual / bagManual). Camp Benefits stays always visible (other players' campfires count too). First release built and uploaded by GitHub Actions.
-- **After 1.0.3 (not released yet):** repository tidied up - code in `Modules/` and `Locales/`, notes in `docs/`. Learned priority: hint-following casts ignored, half-life 500 choices, Wilson confidence threshold (Exorcism no longer jumps to the top on a handful of casts). Situational spells detected automatically and kept in place. "Adapt automatically" replaces the daily notice.
+- **After 1.0.3 (not released yet):** repository tidied up - code in `Modules/` and `Locales/`, notes in `docs/`. Learned priority: hint-following casts ignored, half-life 500 choices, Wilson confidence threshold (Exorcism no longer jumps to the top on a handful of casts). Situational spells detected automatically and kept in place. "Adapt automatically" replaces the daily notice. Seal became a normal rotation entry (no separate blinking icon, "Track Seal" option removed).
 
 ## Releasing (GitHub + CurseForge)
 

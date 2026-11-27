@@ -44,12 +44,23 @@ function T:BuildCandidates()
 			if s and not seen[name] then list[#list + 1] = s end
 		end
 	end
+	-- the seal is one more entry of the rotation: "ready" while no seal is up
+	list[#list + 1] = { name = SEAL_KEY, isSeal = true }
 	self.candidates = list
+end
+
+-- what the player sees for an entry name (the seal has an internal key)
+function T:DisplayName(name)
+	if name == SEAL_KEY then return L["Seal (any)"] end
+	return name
 end
 
 function T:IsSpellEnabled(name)
 	local v = self.db.spells[name]
-	if v == nil then return ns.defaultTimelineSpells[name] or false end
+	if v == nil then
+		if name == SEAL_KEY then return self.db.seal ~= false end
+		return ns.defaultTimelineSpells[name] or false
+	end
 	return v
 end
 
@@ -66,7 +77,9 @@ function T:OrderedCandidates()
 	for i, n in ipairs(ns.N.defaultPriority or {}) do def[n] = i end
 	local tmp = {}
 	for i, s in ipairs(self.candidates or {}) do
-		tmp[#tmp + 1] = { s = s, k = saved[s.name] or (1000 + (def[s.name] or 500)), i = i }
+		local k = saved[s.name] or (1000 + (def[s.name] or 500))
+		if s.isSeal and not saved[s.name] then k = 0 end -- seal on top by default
+		tmp[#tmp + 1] = { s = s, k = k, i = i }
 	end
 	table.sort(tmp, function(a, b)
 		if a.k ~= b.k then return a.k < b.k end
@@ -152,14 +165,18 @@ end
 
 function T:RebuildEntries()
 	local entries, byName = {}, {}
-	if self.db.seal then entries[#entries + 1] = { key = SEAL_KEY, isSeal = true } end
 	for _, s in ipairs(self:OrderedCandidates()) do
 		if self:IsSpellEnabled(s.name) then
-			local base = ns.GetBaseCooldown(s.spellID)
-			local e = { key = s.name, name = s.name, id = s.spellID, icon = s.icon,
-				baseCD = base and base / 1000 or nil }
+			local e
+			if s.isSeal then
+				e = { key = SEAL_KEY, name = SEAL_KEY, isSeal = true, icon = self.sealIcon, id = self.sealSpellId }
+			else
+				local base = ns.GetBaseCooldown(s.spellID)
+				e = { key = s.name, name = s.name, id = s.spellID, icon = s.icon,
+					baseCD = base and base / 1000 or nil }
+			end
 			entries[#entries + 1] = e
-			byName[s.name] = e
+			byName[e.name] = e
 		end
 	end
 	self.entries, self.byName = entries, byName
@@ -435,6 +452,12 @@ function T:OnCast(spellID)
 	if not name then return end
 	local now = GetTime()
 	if ns.IsSealName(name) then
+		self.sealSpellId = spellID
+		local se = self.byName and self.byName[SEAL_KEY]
+		if se then
+			se.id, se.icon = spellID, icon
+			self:LearnFromCast(se, now)
+		end
 		-- a real aura scan refines this if aura data is readable
 		self.sealExpires = now + self.db.sealDuration
 		self.sealIcon = icon
@@ -479,9 +502,9 @@ function T:LearnFromCast(e, now)
 	-- which rotation spells are off cooldown, and which of those can be cast
 	local readyNames, usable = {}, {}
 	for _, o in ipairs(self.entries or {}) do
-		if not o.isSeal and o ~= e then
+		if o ~= e then
 			local rem, missing, secretDur = self:Remaining(o, now)
-			if secretDur == nil and not missing and rem and rem <= 0 then
+			if secretDur == nil and rem and rem <= 0 then
 				readyNames[#readyNames + 1] = o.name
 				usable[o.name] = ns.IsUsable(o.id) and ns.InRange(o.id) or false
 			end
@@ -545,7 +568,10 @@ end
 -- an order as text; situational spells in [brackets]
 function T:FormatOrder(order)
 	local out = {}
-	for i, n in ipairs(order) do out[i] = self:IsSituational(n) and ("[" .. n .. "]") or n end
+	for i, n in ipairs(order) do
+		local d = self:DisplayName(n)
+		out[i] = self:IsSituational(n) and ("[" .. d .. "]") or d
+	end
 	return table.concat(out, " > ")
 end
 
@@ -604,7 +630,7 @@ local function Swaps(cur, new)
 	for i = 1, #new do
 		if a[i] ~= new[i] and pos[new[i]] then
 			local j = pos[new[i]]
-			out[#out + 1] = new[i] .. " <-> " .. a[i]
+			out[#out + 1] = T:DisplayName(new[i]) .. " <-> " .. T:DisplayName(a[i])
 			a[i], a[j] = a[j], a[i]
 			pos[a[i]], pos[a[j]] = i, j
 		end
@@ -699,6 +725,7 @@ function T:ScanSeal(removed)
 		if exp and not ns.IsSecret(exp) and exp > 0 then self.sealExpires = exp end
 		self.sealIcon = found.icon
 		self.sealInstance = found.auraInstanceID
+		if found.spellId and not ns.IsSecret(found.spellId) then self.sealSpellId = found.spellId end
 	elseif secret or not readable then
 		local inst = self.sealInstance
 		if inst and ((removed and removed[inst]) or ns.AuraExists(inst) == false) then
@@ -707,22 +734,29 @@ function T:ScanSeal(removed)
 	else
 		self.sealExpires = nil
 	end
-	if not self.sealIcon then
+	if not self.sealIcon or not self.sealSpellId then
 		for name, s in pairs(ns.spellbook or {}) do
-			if ns.IsSealName(name) then self.sealIcon = s.icon break end
+			if ns.IsSealName(name) then
+				self.sealIcon = self.sealIcon or s.icon
+				self.sealSpellId = self.sealSpellId or s.spellID
+				break
+			end
 		end
 	end
+	local se = self.byName and self.byName[SEAL_KEY]
+	if se then se.icon, se.id = self.sealIcon, self.sealSpellId end
 end
 
 ---------------------------------------------------------------------------
 -- Remaining time
 ---------------------------------------------------------------------------
--- returns: remaining seconds (number), or nil + true when the seal is missing,
--- or nil + false + durationObject when only fallback B can show it
+-- returns: remaining seconds (number; for the seal: time left on it, 0 when no
+-- seal is up = "ready"), or nil + false + durationObject when only fallback B
+-- can show it
 function T:Remaining(e, now)
 	if e.isSeal then
 		if self.sealExpires and self.sealExpires > now then return self.sealExpires - now end
-		return nil, true
+		return 0
 	end
 
 	local info = ns.GetCooldown(e.id)
@@ -790,12 +824,12 @@ function T:Update()
 	local now, S, H = GetTime(), db.iconSize, db.horizon
 	local SOON = 1.5 -- one global cooldown
 	wipe(moving)
-	local nextEntry, sealMissing
+	local nextEntry
 	local justReady = {}
 
 	for i, e in ipairs(self.entries) do
 		local ic = self.icons[i]
-		local rem, missing, secretDur = self:Remaining(e, now)
+		local rem, _, secretDur = self:Remaining(e, now)
 
 		if not shown then
 			ic:Hide()
@@ -819,26 +853,21 @@ function T:Update()
 				ic.track:SetValue(0)
 				ic:SetAlpha(0)
 			end
-		elseif missing then
-			-- no seal: blinking icon inside the track, at the "now" end
-			ic.wasMoving = false
-			sealMissing = true
-			SetIconSize(ic, S)
-			if self.sealIcon then ic.tex:SetTexture(self.sealIcon) end
-			Style(ic, "missing")
-			ic:ClearAllPoints()
-			ic:SetPoint("CENTER", self.bar, "LEFT", self:PosX(0), 0)
-			ic:SetAlpha(1)
-			ic.text:SetText("")
-			ic:Show()
 		elseif rem <= 0 then
 			-- ready: hidden (visible on the action bars anyway). If it just came off
 			-- cooldown it either turns into "press this" or pops (decided below).
-			if ic.wasMoving and not e.isSeal then justReady[#justReady + 1] = ic end
+			if ic.wasMoving then justReady[#justReady + 1] = ic end
 			ic.wasMoving = false
 			ic:Hide()
 			-- entries are in priority order: the first usable ready one is "press this"
-			if not e.isSeal and not nextEntry and ns.IsUsable(e.id) and ns.InRange(e.id) then nextEntry = e end
+			-- (the seal: whenever no seal is up)
+			if not nextEntry then
+				if e.isSeal then
+					if not e.id or ns.IsUsable(e.id) then nextEntry = e end
+				elseif ns.IsUsable(e.id) and ns.InRange(e.id) then
+					nextEntry = e
+				end
+			end
 		else
 			if e.isSeal and self.sealIcon then ic.tex:SetTexture(self.sealIcon) end
 			ic.rem = rem
@@ -847,9 +876,9 @@ function T:Update()
 		end
 	end
 
-	-- "press this" (a missing seal already blinks at "now" and wins)
+	-- "press this"
 	local nx = self.nextIcon
-	local showNx = shown and db.showNext and nextEntry and not sealMissing
+	local showNx = shown and db.showNext and nextEntry
 	-- a spell that just arrived at "now" and becomes "press this" hands over
 	-- without a pop: same place, same size, so it reads as one icon
 	local handover = false
@@ -860,7 +889,7 @@ function T:Update()
 	if showNx then
 		if nx.key ~= nextEntry.key then
 			nx.key = nextEntry.key
-			nx.tex:SetTexture(nextEntry.icon)
+			nx.tex:SetTexture(nextEntry.isSeal and self.sealIcon or nextEntry.icon)
 			nx.fadeIn:Stop()
 			if handover then nx:SetAlpha(1) else nx.fadeIn:Play() end
 			nx.glowIn:Stop(); nx.glowIn:Play()
@@ -877,7 +906,7 @@ function T:Update()
 	table.sort(moving, function(a, b) return a.x < b.x end)
 	for k, ic in ipairs(moving) do
 		local far = ic.rem > H
-		local soon = db.highlightSoon and not ic.entry.isSeal and ic.rem <= SOON
+		local soon = db.highlightSoon and ic.rem <= SOON
 		Style(ic, far and "far" or soon and "soon" or "cd")
 		-- p goes 0 -> 1 over the last SOON seconds, so size and colour change smoothly
 		local p = soon and math.min(1, math.max(0, (SOON - ic.rem) / SOON)) or 0
@@ -921,7 +950,7 @@ function T:Debug()
 		local info = not e.isSeal and ns.GetCooldown(e.id)
 		local apiSecret = info and ns.IsSecret(info.startTime)
 		local rem, missing, secretDur = self:Remaining(e, now)
-		local state = secretDur ~= nil and "fallback B" or missing and "missing" or ("%.1f"):format(rem or 0)
+		local state = secretDur ~= nil and "fallback B" or ("%.1f"):format(rem or 0)
 		ns.Print("  ", e.isSeal and "Seal" or e.name, e.id or "", state,
 			apiSecret and "(api secret, own timer)" or "",
 			e.name and ("cd=" .. tostring(self.db.learned[e.name] or e.baseCD or "?")) or "",

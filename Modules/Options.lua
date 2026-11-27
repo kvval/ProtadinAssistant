@@ -309,18 +309,13 @@ function O:Build()
 		L["Spells ready within 1.5 s grow, so you can plan ahead."]))
 	Indent(soonCb, nextCb, 0, 0)
 
-	local seal = add(Checkbox(p, L["Track Seal"],
-		function() return tdb.seal end,
-		function(v) tdb.seal = v; T:RebuildEntries() end,
-		L["Blinks when you have no seal."]))
-	Indent(seal, soonCb, 0, 0)
 
 	local holder = CreateFrame("Frame", nil, p)
 	holder:SetFrameLevel(p:GetFrameLevel() + 3)
 	holder:SetSize(1, 1)
 	local ph = holder:CreateFontString(nil, "OVERLAY", "GameFontNormal")
 	ph:SetText(L["Rotation, by prio"])
-	ph:SetPoint("TOPLEFT", seal, "BOTTOMLEFT", 4, -12)
+	ph:SetPoint("TOPLEFT", soonCb, "BOTTOMLEFT", 4, -12)
 	self.prioHeader = ph
 	self.prioRows = {}
 	self.tlBox = tBox
@@ -380,7 +375,10 @@ function O:Refresh()
 
 	-- rotation list: position = priority; listed = shown on the timeline
 	local T = ns.timeline
-	local function label(sp) return ("|T%s:16|t %s"):format(sp.icon or 134400, sp.name) end
+	local function label(sp)
+		local icon = sp.isSeal and T.sealIcon or sp.icon
+		return ("|T%s:16|t %s"):format(icon or 134400, T:DisplayName(sp.name))
+	end
 
 	local anchor = self.prioHeader
 	for _, row in ipairs(self.prioRows) do row:Hide() end
