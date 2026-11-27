@@ -13,9 +13,9 @@ Works out of the box. No other addons needed.
 
 ## Buff watcher
 
-- Aura, blessing, Righteous Fury, tracking, food, sleeping bag, campfire - in one row.
-- Faded or wrong - the icon blinks, one line in chat.
-- Click to fix: recast, eat or put it down.
+- Aura, Blessing, Righteous Fury, Tracking, Food, Sleeping Bag, Campfire - in one row.
+- Warns you when a buff is missing or the wrong one is up.
+- One click puts it back.
 
 ## Why it works on Forever
 
