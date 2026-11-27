@@ -1,0 +1,25 @@
+## Interface: 16001
+## Title: Protadin Assistant
+## Notes: Protection paladin helper: self-buff tracker and rotation cooldown timeline
+## Notes-ruRU: Помощник прот-паладина: трекер бафов на себе и таймлайн кулдаунов ротации
+## Author: Lori Quaid
+## Version: 1.0.3
+## X-License: MIT
+## X-Category: Combat
+## X-Curse-Project-ID: 1826638
+## SavedVariables: ProtadinAssistantDB
+## X-Embeds: LibStub, CallbackHandler-1.0, LibDataBroker-1.1, LibDBIcon-1.0
+## DefaultState: Enabled
+
+Libs\LibStub\LibStub.lua
+Libs\CallbackHandler-1.0\CallbackHandler-1.0.lua
+Libs\LibDataBroker-1.1\LibDataBroker-1.1.lua
+Libs\LibDBIcon-1.0\LibDBIcon-1.0.lua
+
+Locales.lua
+Core.lua
+Data.lua
+Buffs.lua
+Timeline.lua
+Options.lua
+Minimap.lua

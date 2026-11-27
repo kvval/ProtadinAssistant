@@ -1,0 +1,4 @@
+# built zips live here locally, releases are built by the packager
+dist/
+*.zip
+luac.out

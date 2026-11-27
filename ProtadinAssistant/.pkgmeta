@@ -1,0 +1,7 @@
+# BigWigs packager config (https://github.com/BigWigsMods/packager)
+# Libraries are embedded in Libs/, so no externals are needed.
+package-as: ProtadinAssistant
+
+manual-changelog:
+  filename: CHANGELOG.md
+  markup-type: markdown
