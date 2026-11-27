@@ -88,6 +88,19 @@ Test character: Lori-Quaid (Protection paladin, English client).
 - **1.0.2:** first-run experience: buff tracker defaults to the right side under the minimap; Well Fed / Well-Rested are switched on or off at every login depending on XP food / sleeping bag in the bags; timeline shown always for new installs; one-time welcome + tip about "Only during combat".
 - **1.0.3:** a Well Fed / Well-Rested slot switched by hand in the options is never switched automatically again (foodManual / bagManual). Camp Benefits stays always visible (other players' campfires count too).
 
+## Releasing (GitHub + CurseForge)
+
+Repository: https://github.com/kvval/ProtadinAssistant (this whole folder; `dist/` is ignored).
+
+1. Bump `## Version:` in `ProtadinAssistant/ProtadinAssistant.toc`.
+2. Update `ProtadinAssistant/CHANGELOG.md` - the packager uploads it as the release changelog.
+3. Commit and push to `main`.
+4. Only when the author says so: tag and push the tag, e.g. `git tag v1.0.4 && git push origin v1.0.4`.
+5. GitHub Actions (`.github/workflows/release.yml`) runs the BigWigs packager: it builds the zip and uploads it to CurseForge (project 1826638, from `X-Curse-Project-ID` in the toc) and to GitHub Releases.
+
+Needs the repository secret `CF_API_KEY` (a CurseForge API token, added by the author in GitHub: Settings → Secrets and variables → Actions).
+A tag with `-beta` / `-alpha` makes a beta / alpha release on CurseForge.
+
 ## Open items
 
 - [ ] Run a dungeon on 1.0.0 and check there are no Lua errors (the 0.3.1 aura-restriction fix is untested in a real instance).
