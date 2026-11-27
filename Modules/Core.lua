@@ -194,7 +194,7 @@ function ns.ScanSpellbook()
 		if not name or not id then return end
 		local e = byName[name]
 		if not e then
-			e = { name = name }
+			e = { name = name, baseID = id } -- the spellbook lists rank 1 first
 			byName[name] = e
 			list[#list + 1] = e
 		end
@@ -488,9 +488,91 @@ local function MergeDefaults(dst, src)
 end
 ns.MergeDefaults = MergeDefaults
 
+---------------------------------------------------------------------------
+-- Stored by spell ID, used by name
+---------------------------------------------------------------------------
+-- In memory the addon works with spell names (in the client's language).
+-- On disk everything spell-related is keyed by spell ID (rank 1), so learned
+-- data survives a client language change or a renamed spell. Converted at
+-- login (IDs -> names) and at logout (names -> IDs).
+local STORE_VERSION = 2
+local idOfName = {} -- name -> ID pairs seen this session
+
+local function NameOf(key)
+	if type(key) ~= "number" then return key end -- "__seal" and old name keys pass through
+	local n = ns.GetSpellInfo(key)
+	if n then idOfName[n] = idOfName[n] or key end
+	return n
+end
+
+local function IdOf(key)
+	if type(key) ~= "string" or key:sub(1, 2) == "__" then return key end
+	if idOfName[key] then return idOfName[key] end
+	local s = ns.spellbook and ns.spellbook[key]
+	if s then return s.baseID or s.spellID end
+	local _, _, id = ns.GetSpellInfo(key)
+	return id or key -- unknown: keep the name rather than lose it
+end
+
+local function MapKeys(t, f)
+	if type(t) ~= "table" then return t end
+	local out = {}
+	for k, v in pairs(t) do
+		local nk = f(k)
+		if nk ~= nil then out[nk] = v end
+	end
+	return out
+end
+
+local function MapList(t, f)
+	if type(t) ~= "table" then return t end
+	local out = {}
+	for _, v in ipairs(t) do
+		local nv = f(v)
+		if nv ~= nil then out[#out + 1] = nv end
+	end
+	return out
+end
+
+local function Convert(db, f)
+	local tl, b = db.timeline, db.buffs
+	if tl then
+		tl.priority = MapList(tl.priority, f)
+		tl.spells = MapKeys(tl.spells, f)
+		tl.learned = MapKeys(tl.learned, f)
+		local learn = tl.learn
+		if learn then
+			learn.wins = MapKeys(learn.wins, f)
+			for k, row in pairs(learn.wins or {}) do learn.wins[k] = MapKeys(row, f) end
+			learn.avail = MapKeys(learn.avail, f)
+			learn.seals = MapKeys(learn.seals, f)
+		end
+	end
+	if b then
+		if b.blessing ~= nil then b.blessing = f(b.blessing) end
+		if b.aura ~= nil then b.aura = f(b.aura) end
+		if b.tracking ~= nil then b.tracking = f(b.tracking) end
+	end
+end
+
+-- login: IDs on disk -> names in memory (old name-keyed data needs nothing)
+function ns.LoadStored(db)
+	if (db.storeVersion or 1) >= STORE_VERSION then Convert(db, NameOf) end
+	ns.storeLoaded = true
+end
+
+-- logout: names in memory -> IDs on disk
+function ns.SaveStored(db)
+	if not ns.storeLoaded then return end -- not a paladin: the data was never converted
+	Convert(db, IdOf)
+	db.storeVersion = STORE_VERSION
+	ns.storeLoaded = false
+end
+
 local ev = CreateFrame("Frame")
 ev:RegisterEvent("ADDON_LOADED")
 ev:RegisterEvent("PLAYER_LOGIN")
+ev:RegisterEvent("PLAYER_LOGOUT")
 ev:RegisterEvent("PLAYER_REGEN_ENABLED")
 ev:SetScript("OnEvent", function(_, event, arg1)
 	if event == "ADDON_LOADED" and arg1 == ADDON then
@@ -504,8 +586,9 @@ ev:SetScript("OnEvent", function(_, event, arg1)
 		ns.enabled = true
 		ns.version = (C_AddOns and C_AddOns.GetAddOnMetadata and C_AddOns.GetAddOnMetadata(ADDON, "Version"))
 			or (GetAddOnMetadata and GetAddOnMetadata(ADDON, "Version"))
-		ns.BuildNames()
 		ns.ScanSpellbook()
+		ns.LoadStored(ns.db)
+		ns.BuildNames()
 		for _, m in ipairs(ns.modules) do m:Enable() end
 		ns.UpdateGrid()
 		if ns.firstRun and not ns.db.welcomed then
@@ -516,6 +599,8 @@ ev:SetScript("OnEvent", function(_, event, arg1)
 				ns.Print(ns.L["The cooldown timeline is always shown for now. In the options you can show it only during combat."])
 			end)
 		end
+	elseif event == "PLAYER_LOGOUT" then
+		ns.SaveStored(ns.db)
 	elseif event == "PLAYER_REGEN_ENABLED" then
 		for key, fn in pairs(pending) do
 			pending[key] = nil

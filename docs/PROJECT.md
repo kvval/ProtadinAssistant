@@ -58,6 +58,10 @@ Test character: Lori-Quaid (Protection paladin, English client).
 - Slash commands: `/protadin` (`/pda`) `lock | unlock | reset | auras | debug`.
 - One-time welcome message on the very first login.
 
+## Saved data
+
+In memory the addon uses spell names (client language). On disk (`ProtadinAssistantDB`, `storeVersion = 2`) everything spell-related is keyed by spell ID of rank 1: priority list, enabled spells, learned cooldowns, learning data (wins, avail, seals) and the chosen aura / blessing / tracking. `ns.LoadStored` converts IDs to names at login, `ns.SaveStored` back at logout (`PLAYER_LOGOUT`). Learned data survives a client language change. Non-paladin logins don't convert, so they leave the data untouched. Old name-keyed data (before 1.0.6) is converted on the first logout.
+
 ## Code layout
 
 | File | Role |

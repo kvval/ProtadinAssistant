@@ -37,6 +37,7 @@ check "hand-over" "lua5.1 tools/handover_test.lua . enUS" "HANDOVER TEST DONE"
 check "seal" "lua5.1 tools/seal_test.lua . enUS" "SEAL TEST DONE"
 check "chat links" "lua5.1 tools/links_test.lua . enUS" "LINKS TEST DONE"
 check "idle / pre-pull" "lua5.1 tools/idle_prepull_test.lua . enUS" "IDLE PREPULL TEST DONE"
+check "stored by spell ID" "lua5.1 tools/storage_test.lua . enUS" "loaded wins:	Правосудие	->	Щит небес	12.5"
 
 [ $fail -eq 0 ] && echo "ALL CHECKS PASSED" || echo "SOME CHECKS FAILED"
 exit $fail
