@@ -207,6 +207,8 @@ function B:Enable()
 	end
 	f:SetScript("OnEvent", function(_, event, ...) B:OnEvent(event, ...) end)
 
+	self.isRelevantAura = function(a) return B:IsRelevantAura(a) end
+	self.isTrackedAura = function(id) return B:IsTrackedAura(id) end
 	local acc, scanAcc = 0, 0
 	f:SetScript("OnUpdate", function(_, el)
 		acc, scanAcc = acc + el, scanAcc + el
@@ -397,8 +399,10 @@ function B:OnEvent(event, ...)
 			for id in pairs(removed) do self.removedIDs[id] = true end
 		end
 		-- auras change in bursts (several events a frame in combat): scan once
-		-- for the whole burst, from OnUpdate
-		self.scanDue = true
+		-- for the whole burst, from OnUpdate - and only if it's about our buffs
+		if ns.AuraUpdateTouches(info, self.isRelevantAura, self.isTrackedAura) then
+			self.scanDue = true
+		end
 	else
 		self:Scan()
 	end
@@ -409,6 +413,27 @@ end
 ---------------------------------------------------------------------------
 -- full scan; when auras are secret or can't be read at all (instances), keeps
 -- the previous state and only detects removals via aura instance ids
+-- an added aura that one of the slots cares about
+function B:IsRelevantAura(a)
+	local name, id, N, D = a.name, a.spellId, ns.N, ns.D
+	if ns.IsSecret(id) then id = nil end
+	local base = ns.BlessingBase(name)
+	return (base and self.blessingSet and self.blessingSet[base])
+		or (self.auraSet and self.auraSet[name])
+		or name == N.RF or name == N.WellFed or name == N.WellRested or name == N.CampBenefits
+		or (not ns.IsSecret(a.icon) and a.icon == D.WELL_FED_ICON)
+		or (id ~= nil and (id == D.WELL_RESTED or id == (D.CAMP_BENEFITS or self.db.campBenefitsId)))
+		or false
+end
+
+-- an aura instance shown in a slot (right or wrong buff)
+function B:IsTrackedAura(id)
+	for _, r in pairs(self.state or {}) do
+		if r.instance == id or r.wrongInstance == id then return true end
+	end
+	return false
+end
+
 function B:Scan()
 	if not self.db or not self.db.enabled then return end
 	if self.loading then return end -- keep the pre-loading state, see EndLoading
@@ -433,11 +458,11 @@ function B:Scan()
 		if fromMe and base and base == db.blessing then
 			take("blessing")
 		elseif fromMe and base and self.blessingSet[base] and not res.blessing.ok then
-			res.blessing.wrong = name
+			res.blessing.wrong, res.blessing.wrongInstance = name, a.auraInstanceID
 		elseif fromMe and name == db.aura then
 			take("aura")
 		elseif fromMe and self.auraSet[name] and not res.aura.ok then
-			res.aura.wrong = name
+			res.aura.wrong, res.aura.wrongInstance = name, a.auraInstanceID
 		elseif name == N.RF then
 			take("rf")
 		elseif name == N.WellFed or (not ns.IsSecret(a.icon) and a.icon == D.WELL_FED_ICON) then

@@ -14,7 +14,7 @@ local D = {
 	WELL_FED_ICON  = 136000,
 	WELL_RESTED    = 429959,          -- Cozy Sleeping Bag buff (Forever)
 	SLEEPING_BAG   = 211527,          -- item
-	CAMP_BENEFITS  = nil,             -- Forever camp-object buff; ID not known yet, name fallback below
+	CAMP_BENEFITS  = 1229741,         -- Forever camp-object buff (seen in game 2026-11-28)
 	-- cooked food that gives Well Fed (+5% kill XP on Forever). Not complete:
 	-- bag food is also recognised by its tooltip mentioning Well Fed.
 	-- Sources: method.gg / seemeta.com recipe tables + in-game examples.

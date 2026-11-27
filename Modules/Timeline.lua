@@ -400,6 +400,10 @@ function T:Enable()
 	end
 	self.talentsFrom = GetTime() + 5
 	f:RegisterEvent("PLAYER_EQUIPMENT_CHANGED")
+	self.isSealAura = function(a)
+		return ns.AuraFromPlayer(a) and (ns.IsSealName(a.name) or T:LooksLikeSeal(a)) or false
+	end
+	self.isSealInstance = function(id) return id == T.sealInstance end
 	f:RegisterEvent("PLAYER_TARGET_CHANGED")
 	f:RegisterUnitEvent("UNIT_AURA", "player")
 	f:RegisterUnitEvent("UNIT_SPELLCAST_SUCCEEDED", "player")
@@ -468,8 +472,9 @@ function T:UpdateVisibility()
 end
 
 function T:OnEvent(event, ...)
-	-- something changed: ask the client again on the next frame
-	self.queryTick = (self.queryTick or 0) + 1
+	-- something changed: ask the client again on the next frame (auras don't
+	-- change cooldowns, only what's usable)
+	if event ~= "UNIT_AURA" then self.queryTick = (self.queryTick or 0) + 1 end
 	self.usableTick = (self.usableTick or 0) + 1
 	if event == "SPELL_UPDATE_COOLDOWN" then return end
 	if self.isTalentEvent[event] then
@@ -481,6 +486,7 @@ function T:OnEvent(event, ...)
 		return
 	end
 	if event == "PLAYER_EQUIPMENT_CHANGED" then self:RefreshTooltipCooldowns() return end
+	if event == "PLAYER_REGEN_DISABLED" or event == "PLAYER_REGEN_ENABLED" then self.cdSecret = nil end
 	if event == "PLAYER_REGEN_DISABLED" then
 		self.inCombat = true
 		self.castsSecret = nil
@@ -495,7 +501,9 @@ function T:OnEvent(event, ...)
 		self:BuildCandidates(); self:RebuildEntries()
 	elseif event == "UNIT_AURA" then
 		local _, info = ...
-		self:ScanSeal(ns.RemovedAuraIDs(info))
+		if ns.AuraUpdateTouches(info, self.isSealAura, self.isSealInstance) then
+			self:ScanSeal(ns.RemovedAuraIDs(info))
+		end
 	elseif event == "UNIT_SPELLCAST_SUCCEEDED" then
 		local _, _, spellID = ...
 		if spellID == nil then return end
@@ -880,7 +888,12 @@ function T:Remaining(e, now)
 end
 
 function T:QueryRemaining(e, now)
-	local info = ns.GetCooldown(e.id)
+	-- in combat the answers are secret: after the first one, don't ask (each
+	-- answer is a new table) - our own timers know the rest
+	local info = not (self.inCombat and self.cdSecret) and ns.GetCooldown(e.id) or nil
+	if info and self.inCombat and (ns.IsSecret(info.startTime) or ns.IsSecret(info.duration)) then
+		self.cdSecret = true
+	end
 	local start, dur = info and info.startTime, info and info.duration
 	if info and not ns.IsSecret(start) and not ns.IsSecret(dur) then
 		-- readable: this is the truth, keep our tracker in sync with it

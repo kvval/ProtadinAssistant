@@ -125,7 +125,7 @@ GitHub repo settings worth having (author does them in the browser): About with 
 
 - [x] Dungeon run without Lua errors (author, 2026-11-27).
 - [x] In-game clicks: minimap button, food, campfire kit look fine (author, 2026-11-27).
-- [ ] Once the Camp Benefits ID is seen (`/protadin debug` shows it), hardcode it in `Data.lua` (`CAMP_BENEFITS`) for every user.
+- [x] Camp Benefits spell ID 1229741 hardcoded in `Data.lua` (seen in game 2026-11-28).
 - [x] `release.yml` runs `tools/run_all.sh` before the packager (2026-11-27). First real run happens with the next tag - if it fails on the GitHub runner, nothing is published and the log shows why.
 - [ ] Optional: update `actions/checkout` to a Node 24 version when the deprecation warning starts to matter.
 - Ideas, not planned: the same addon for other classes (warrior tank and shaman fit best). Rejected ideas: GCD sweep on the hint, "expiring soon" colours, error-catch wrapper, minimap learning-status line, undo button.

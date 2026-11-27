@@ -287,6 +287,34 @@ function ns.ForEachPlayerAura(fn)
 	return true
 end
 
+-- Does a UNIT_AURA update concern us? In combat auras change many times a
+-- second, and every full look at the buffs costs a new table per buff.
+-- isRelevant(aura) - an added aura we care about; isTracked(id) - an aura
+-- instance we are watching. Anything unclear (full update, secret values,
+-- errors) counts as "yes".
+local function TouchesIDs(ids, isTracked)
+	if not ids then return false end
+	for _, id in ipairs(ids) do
+		if ns.IsSecret(id) or isTracked(id) then return true end
+	end
+	return false
+end
+
+function ns.AuraUpdateTouches(info, isRelevant, isTracked)
+	if type(info) ~= "table" then return true end
+	local ok, yes = pcall(function()
+		if info.isFullUpdate then return true end
+		if info.addedAuras then
+			for _, a in ipairs(info.addedAuras) do
+				if ns.IsSecret(a.name) or isRelevant(a) then return true end
+			end
+		end
+		return TouchesIDs(info.removedAuraInstanceIDs, isTracked)
+			or TouchesIDs(info.updatedAuraInstanceIDs, isTracked)
+	end)
+	return not ok or yes
+end
+
 -- true = aura still there, false = gone, nil = can't tell right now
 function ns.AuraExists(instanceID)
 	if not instanceID then return false end
