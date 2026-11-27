@@ -752,21 +752,73 @@ end
 ---------------------------------------------------------------------------
 -- /protadin mem: how fast the addon makes garbage (for checking performance)
 ---------------------------------------------------------------------------
-local GetMem = (C_AddOns and C_AddOns.GetAddOnMemoryUsage) or GetAddOnMemoryUsage
 function ns.MemoryKB()
+	local GetMem = (C_AddOns and C_AddOns.GetAddOnMemoryUsage) or GetAddOnMemoryUsage
 	if not (UpdateAddOnMemoryUsage and GetMem) then return nil end
 	UpdateAddOnMemoryUsage()
 	return GetMem(ADDON)
 end
 
+-- While measuring, the main functions are wrapped: the Lua heap is read
+-- before and after each call, so each one's own garbage (including the
+-- tables the client hands back to it) is counted. Totals include calls made
+-- from inside (Scan inside OnEvent).
+local PROFILED = {
+	timeline = { "Update", "OnEvent", "ScanSeal", "OnCast", "QueryRemaining" },
+	buffs = { "OnEvent", "Scan", "UpdateTimers", "AdoptActive" },
+}
+
+local function StartProfile()
+	local stats, saved = {}, {}
+	for modName, fns in pairs(PROFILED) do
+		local m = ns[modName]
+		if m then
+			for _, fn in ipairs(fns) do
+				local orig = rawget(m, fn)
+				if type(orig) == "function" then
+					saved[#saved + 1] = { m, fn, orig }
+					m[fn] = function(self, ev, ...)
+						local label = modName .. "." .. fn
+						if fn == "OnEvent" and type(ev) == "string" then label = label .. " " .. ev end
+						local before = collectgarbage("count")
+						local r1, r2, r3 = orig(self, ev, ...)
+						local d = collectgarbage("count") - before
+						local st = stats[label]
+						if not st then st = { kb = 0, n = 0 }; stats[label] = st end
+						st.n = st.n + 1
+						if d > 0 then st.kb = st.kb + d end
+						return r1, r2, r3
+					end
+				end
+			end
+		end
+	end
+	return function()
+		for _, x in ipairs(saved) do x[1][x[2]] = x[3] end
+		return stats
+	end
+end
+
 function ns.MeasureMemory()
 	local a = ns.MemoryKB()
 	if not a then ns.Print("memory: n/a") return end
+	if ns.measuring then return end
+	ns.measuring = true
 	ns.Print(("memory: %.0f KB, measuring for 10 s..."):format(a))
+	local stop = StartProfile()
 	C_Timer.After(10, function()
+		ns.measuring = nil
+		local stats = stop()
 		local b = ns.MemoryKB()
 		if b < a then ns.Print("memory: a garbage collection ran, try again") return end
 		ns.Print(("memory: %.0f KB, +%.1f KB/s"):format(b, (b - a) / 10))
+		local list = {}
+		for label, st in pairs(stats) do list[#list + 1] = { label = label, kb = st.kb, n = st.n } end
+		table.sort(list, function(x, y) return x.kb > y.kb end)
+		for i = 1, math.min(8, #list) do
+			local x = list[i]
+			ns.Print(("  %s: %.1f KB/s, %d calls"):format(x.label, x.kb / 10, x.n))
+		end
 	end)
 end
 
