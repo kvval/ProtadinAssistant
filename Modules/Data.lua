@@ -173,6 +173,73 @@ function ns.ItemName(id, fallback)
 	return n or fallback
 end
 
+---------------------------------------------------------------------------
+-- Spell cooldown from its tooltip ("8 sec cooldown"). The tooltip shows the
+-- cooldown with talents and gear already counted in. The text is matched with
+-- the client's own strings, so it works in any language.
+---------------------------------------------------------------------------
+local cdPatterns
+local function CooldownPatterns()
+	if cdPatterns then return cdPatterns end
+	cdPatterns = {}
+	for _, g in ipairs({ { "SPELL_RECAST_TIME_SEC", 1 }, { "SPELL_RECAST_TIME_MIN", 60 },
+		{ "SPELL_RECAST_TIME_HOURS", 3600 } }) do
+		local fmt = _G[g[1]]
+		if type(fmt) == "string" and not ns.IsSecret(fmt) then
+			-- "%.3g sec cooldown" -> "^([%d%.,]+) sec cooldown$"
+			local pat = fmt:gsub("([%(%)%.%[%]%*%+%-%?%^%$])", "%%%1")
+			pat = pat:gsub("%%%%[%d%%.]*[sgdf]", "([%%d%%.,]+)")
+			cdPatterns[#cdPatterns + 1] = { "^" .. pat .. "$", g[2] }
+		end
+	end
+	return cdPatterns
+end
+
+local function CooldownFromText(t)
+	if type(t) ~= "string" or ns.IsSecret(t) then return nil end
+	for _, p in ipairs(CooldownPatterns()) do
+		local n = t:match(p[1])
+		n = n and tonumber((n:gsub(",", ".")))
+		if n then return n * p[2] end
+	end
+end
+
+local cdTip
+local SIDES = { "Right", "Left" }
+function ns.TooltipCooldown(spellID)
+	if not spellID then return nil end
+	if C_TooltipInfo and C_TooltipInfo.GetSpellByID then
+		local ok, data = pcall(C_TooltipInfo.GetSpellByID, spellID)
+		if ok and type(data) == "table" and data.lines then
+			for _, l in ipairs(data.lines) do
+				local cd = CooldownFromText(l.rightText) or CooldownFromText(l.leftText)
+				if cd then return cd end
+			end
+			return nil
+		end
+	end
+	if not cdTip then
+		cdTip = CreateFrame("GameTooltip", "ProtadinCooldownTooltip", nil, "GameTooltipTemplate")
+		cdTip:SetOwner(WorldFrame, "ANCHOR_NONE")
+	end
+	cdTip:ClearLines()
+	if not pcall(cdTip.SetSpellByID, cdTip, spellID) then return nil end
+	for i = 1, (cdTip:NumLines() or 0) do
+		for _, side in ipairs(SIDES) do
+			local fs = _G["ProtadinCooldownTooltipText" .. side .. i]
+			local cd = fs and CooldownFromText(fs:GetText())
+			if cd then return cd end
+		end
+	end
+end
+
+-- raw strings for /protadin debug
+function ns.CooldownPatternInfo()
+	local out = {}
+	for _, p in ipairs(CooldownPatterns()) do out[#out + 1] = p[1] end
+	return table.concat(out, " | ")
+end
+
 -- does the item's tooltip mention Well Fed (in the client's language)?
 local tipCache = {}
 local scanTip

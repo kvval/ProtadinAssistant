@@ -212,7 +212,7 @@ function T:RebuildEntries()
 			else
 				local base = ns.GetBaseCooldown(s.spellID)
 				e = { key = s.name, name = s.name, id = s.spellID, icon = s.icon,
-					baseCD = base and base / 1000 or nil }
+					baseCD = base and base / 1000 or nil, tipCD = ns.TooltipCooldown(s.spellID) }
 			end
 			entries[#entries + 1] = e
 			byName[e.name] = e
@@ -399,6 +399,7 @@ function T:Enable()
 		if pcall(f.RegisterEvent, f, ev) then self.isTalentEvent[ev] = true end
 	end
 	self.talentsFrom = GetTime() + 5
+	f:RegisterEvent("PLAYER_EQUIPMENT_CHANGED")
 	f:RegisterEvent("PLAYER_TARGET_CHANGED")
 	f:RegisterUnitEvent("UNIT_AURA", "player")
 	f:RegisterUnitEvent("UNIT_SPELLCAST_SUCCEEDED", "player")
@@ -476,8 +477,10 @@ function T:OnEvent(event, ...)
 		-- cast out of combat learns them again (until then: the base cooldown).
 		-- The client also sends these at login - ignore the first seconds.
 		if GetTime() > (self.talentsFrom or 0) then wipe(self.db.learned) end
+		self:RefreshTooltipCooldowns()
 		return
 	end
+	if event == "PLAYER_EQUIPMENT_CHANGED" then self:RefreshTooltipCooldowns() return end
 	if event == "PLAYER_REGEN_DISABLED" then
 		self.inCombat = true
 		self.castsSecret = nil
@@ -505,6 +508,18 @@ function T:OnEvent(event, ...)
 	end
 end
 
+-- talents or gear changed: the tooltip shows the new cooldown (the client
+-- may update it a moment later, so read again after a short delay too)
+function T:RefreshTooltipCooldowns()
+	local function read()
+		for _, e in ipairs(self.entries or {}) do
+			if not e.isSeal then e.tipCD = ns.TooltipCooldown(e.id) end
+		end
+	end
+	read()
+	C_Timer.After(1, read)
+end
+
 function T:OnCast(spellID)
 	local name, icon = ns.GetSpellInfo(spellID)
 	if not name then return end
@@ -527,7 +542,8 @@ function T:OnCast(spellID)
 	local e = self.byName and self.byName[name]
 	if not e then return end
 	self:LearnFromCast(e, now) -- before e's own cooldown starts
-	local dur = self.db.learned[name] or e.baseCD
+	-- tooltip first: it already counts talents and gear in
+	local dur = e.tipCD or self.db.learned[name] or e.baseCD
 	if dur and dur > 1.5 then
 		self.cd[name] = { start = now, dur = dur }
 	end
@@ -1078,12 +1094,14 @@ function T:Debug()
 		local state = secretDur ~= nil and "fallback B" or ("%.1f"):format(rem or 0)
 		ns.Print("  ", e.isSeal and "Seal" or e.name, e.id or "", state,
 			apiSecret and "(api secret, own timer)" or "",
-			e.name and ("cd=" .. tostring(self.db.learned[e.name] or e.baseCD or "?")) or "",
+			e.name and ("cd=" .. tostring(self.db.learned[e.name] or e.baseCD or "?")
+				.. " tip=" .. tostring(e.tipCD)) or "",
 			e.id and ns.DescribeUsable(e.id) or "")
 	end
 	local ctype = UnitExists("target") and UnitCreatureType("target")
 	ns.Print("  target:", UnitExists("target") and (ns.IsSecret(ctype) and "SECRET" or tostring(ctype)) or "none",
 		"  press-this:", tostring(self.nextIcon.key))
+	ns.Print("  cooldown text patterns:", ns.CooldownPatternInfo())
 	local c = {}
 	for _, s in ipairs(self.candidates or {}) do c[#c + 1] = s.name end
 	ns.Print("  candidates:", table.concat(c, ", "))

@@ -41,6 +41,9 @@ check "stored by spell ID" "lua5.1 tools/storage_test.lua . enUS" "loaded wins:	
 check "talents forget cooldowns, login ignored" "lua5.1 tools/talent_test.lua . enUS" "at login:	8"
 check "talent change clears learned" "lua5.1 tools/talent_test.lua . enUS" "after respec:	nil"
 check "cooldowns asked only after events" "lua5.1 tools/talent_test.lua . enUS" "queries in 10 s without events:	5"
+check "cooldown from tooltip (sec)" "lua5.1 tools/tipcd_test.lua . enUS" "en sec:	8"
+check "cooldown from tooltip (min)" "lua5.1 tools/tipcd_test.lua . enUS" "en min:	3600"
+check "cooldown from tooltip (decimal)" "lua5.1 tools/tipcd_test.lua . enUS" "en decimal:	1.5"
 
 [ $fail -eq 0 ] && echo "ALL CHECKS PASSED" || echo "SOME CHECKS FAILED"
 exit $fail
