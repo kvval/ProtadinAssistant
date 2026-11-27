@@ -20,18 +20,14 @@ Works out of the box. No other addons needed.
 | Command | What it does |
 |---|---|
 | `/protadin` | options |
-| `/protadin lock` / `unlock` | lock / move the frames |
+| `/protadin lock` | lock the frames |
+| `/protadin unlock` | move the frames |
 | `/protadin reset` | frames back to default places |
 | `/protadin forget` | forget the learned priority, start learning again |
+| `/protadin debug` | debug info - post it in the comments if something's wrong |
 | `/protadin help` | all commands |
 
 `/pda` works too. Right-click the minimap button for options.
-
-## Troubleshooting
-
-- Frames gone - `/protadin reset`.
-- Wrong suggestion - post `/protadin debug` output in the comments.
-- Learned priority went wrong - `/protadin forget`.
 
 ## Languages
 
