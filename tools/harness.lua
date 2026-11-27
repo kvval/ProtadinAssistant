@@ -128,4 +128,7 @@ MM:OnClick("LeftButton")
 ns.Print = oldP
 print("left-click (no data):", printed[1])
 ns.SetMinimapShown(false); print("hidden ->", ns.db.minimap.hide); ns.SetMinimapShown(true); print("shown ->", not ns.db.minimap.hide)
+ns.db.timeline.learn.choices = 42
+SlashCmdList.PROTADIN("forget")
+print("forget -> choices:", ns.db.timeline.learn.choices)
 print("HARNESS OK")

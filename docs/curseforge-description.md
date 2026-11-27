@@ -22,6 +22,7 @@ Works out of the box. No other addons needed.
 | `/protadin` | options |
 | `/protadin lock` / `unlock` | lock / move the frames |
 | `/protadin reset` | frames back to default places |
+| `/protadin forget` | forget the learned priority, start learning again |
 
 `/pda` works too. Right-click the minimap button for options.
 
@@ -29,7 +30,7 @@ Works out of the box. No other addons needed.
 
 - Frames gone - `/protadin reset`.
 - Wrong suggestion - post `/protadin debug` output in the comments.
-- Learned priority went wrong - Options → Forget.
+- Learned priority went wrong - `/protadin forget`.
 
 ## Languages
 

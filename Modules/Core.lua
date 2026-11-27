@@ -537,6 +537,11 @@ SlashCmdList.PROTADIN = function(msg)
 		ns.SetLocked(false); ns.Print(L["Frames unlocked: drag them, then /protadin lock."])
 	elseif cmd == "reset" then
 		ns.ResetPositions()
+	elseif cmd == "forget" then
+		-- same as the Forget button: clear the learned priority, learning starts over
+		ns.timeline:ForgetLearned()
+		ns.Print(L["Learned priority cleared."])
+		if ns.RefreshOptions then ns.RefreshOptions() end
 	elseif cmd == "auras" then
 		ns.Print(L["buffs on you:"])
 		local readable = ns.ForEachPlayerAura(function(a)
@@ -551,6 +556,6 @@ SlashCmdList.PROTADIN = function(msg)
 	elseif cmd == "" or cmd == "options" or cmd == "config" then
 		ns.OpenOptions()
 	else
-		ns.Print("/protadin [options] | lock | unlock | reset | auras | debug")
+		ns.Print("/protadin [options] | lock | unlock | reset | forget | auras | debug")
 	end
 end

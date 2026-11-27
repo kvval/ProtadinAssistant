@@ -37,6 +37,8 @@ local KEYS = {
 	"Seal",
 	-- seal popularity (1.0.4)
 	"Seals you use:",
+	-- /protadin forget (1.0.6)
+	"Learned priority cleared.",
 }
 
 local T = {}
@@ -112,6 +114,7 @@ T.ruRU = {
 	["priority %s."] = "приоритет: %s.",
 	["Seal"] = "Печать",
 	["Seals you use:"] = "Твои печати:",
+	["Learned priority cleared."] = "Выученный приоритет стёрт.",
 }
 
 T.deDE = {
@@ -185,6 +188,7 @@ T.deDE = {
 	["priority %s."] = "Priorität: %s.",
 	["Seal"] = "Siegel",
 	["Seals you use:"] = "Deine Siegel:",
+	["Learned priority cleared."] = "Gelernte Priorität gelöscht.",
 }
 
 T.frFR = {
@@ -258,6 +262,7 @@ T.frFR = {
 	["priority %s."] = "priorité : %s.",
 	["Seal"] = "Sceau",
 	["Seals you use:"] = "Vos sceaux :",
+	["Learned priority cleared."] = "Priorité apprise effacée.",
 }
 
 T.esES = {
@@ -331,6 +336,7 @@ T.esES = {
 	["priority %s."] = "prioridad: %s.",
 	["Seal"] = "Sello",
 	["Seals you use:"] = "Tus sellos:",
+	["Learned priority cleared."] = "Prioridad aprendida borrada.",
 }
 T.esMX = T.esES
 
@@ -405,6 +411,7 @@ T.ptBR = {
 	["priority %s."] = "prioridade: %s.",
 	["Seal"] = "Selo",
 	["Seals you use:"] = "Seus selos:",
+	["Learned priority cleared."] = "Prioridade aprendida apagada.",
 }
 
 T.itIT = {
@@ -478,6 +485,7 @@ T.itIT = {
 	["priority %s."] = "priorità: %s.",
 	["Seal"] = "Sigillo",
 	["Seals you use:"] = "I tuoi sigilli:",
+	["Learned priority cleared."] = "Priorità appresa cancellata.",
 }
 
 T.koKR = {
@@ -551,6 +559,7 @@ T.koKR = {
 	["priority %s."] = "우선순위: %s.",
 	["Seal"] = "문장",
 	["Seals you use:"] = "사용하는 문장:",
+	["Learned priority cleared."] = "학습한 우선순위를 지웠습니다.",
 }
 
 T.zhCN = {
@@ -624,6 +633,7 @@ T.zhCN = {
 	["priority %s."] = "优先级：%s。",
 	["Seal"] = "圣印",
 	["Seals you use:"] = "你使用的圣印：",
+	["Learned priority cleared."] = "已清除学到的优先级。",
 }
 
 T.zhTW = {
@@ -697,6 +707,7 @@ T.zhTW = {
 	["priority %s."] = "優先順序：%s。",
 	["Seal"] = "聖印",
 	["Seals you use:"] = "你使用的聖印：",
+	["Learned priority cleared."] = "已清除學到的優先順序。",
 }
 
 local strings = T[GetLocale()]
