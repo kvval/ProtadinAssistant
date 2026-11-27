@@ -246,7 +246,7 @@ function O:Build()
 	r = slotRow("bag", N.WellRested, r)
 	r = slotRow("camp", N.CampBenefits, r)
 
-	local chat = add(Checkbox(p, L["Chat message when a buff drops"],
+	local chat = add(Checkbox(p, L["Chat message when a buff fades"],
 		function() return bdb.chat end, function(v) bdb.chat = v end))
 	chat:SetPoint("TOPLEFT", r, "BOTTOMLEFT", -20, -8)
 
