@@ -9,7 +9,7 @@ Works out of the box. No other addons needed.
 - Your rotation and seal on a 10-second timeline.
 - Next spell, based on YOUR play style.
 - Skips what you can't cast: wrong target, no mana, Hammer of Wrath above 20%.
-- Adjusts after fights, one chat line shows what moved.
+- Learns as you fight. Changes show up in chat.
 
 ## Buff watcher
 
