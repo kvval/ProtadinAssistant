@@ -1,25 +1,19 @@
-<!-- Summary (project settings): Self-learning ability timeline and buff watcher for Protection Paladins. -->
+<!-- Summary (project settings): Self-learning Ability Timeline and Buff Watcher for Protection Paladins. -->
 # Protadin Assistant
 
-Self-learning ability timeline and buff watcher for Protection Paladins.
+Self-learning Ability Timeline and Buff Watcher for Protection Paladins.
 Works out of the box. No other addons needed.
 
-## Ability timeline
+## Ability Timeline
 
 - Your rotation and Seal on a 10-second timeline.
-- Next spell, based on YOUR play style.
-- Skips what you can't cast: wrong target, no mana, Hammer of Wrath above 20%.
-- Learns as you fight. Changes show up in chat.
+- Next spell, based on YOUR play style. Learns as you fight, changes show up in chat.
 
-## Buff watcher
+## Buff Watcher
 
 - Aura, Blessing, Righteous Fury, Tracking, Food, Sleeping Bag, Campfire - in one row.
 - Warns you when a buff is missing or the wrong one is up.
 - One click puts it back.
-
-## Why it works on Forever
-
-The client hides cooldowns from addons in combat. The addon learns them out of combat and counts them itself.
 
 ## Commands
 
