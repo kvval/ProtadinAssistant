@@ -1,3 +1,9 @@
+# Protadin Assistant 1.0.7
+
+- **Lighter.** Many times less memory use, in and out of combat.
+- **Exact cooldowns.** Taken from the spell tooltip, with Talents and Gear counted in.
+- **Camp Benefits built in.** Works right away in any client language.
+
 # Protadin Assistant 1.0.6
 
 - **Pre-pull check.** On a ready check or when you enter a dungeon, one chat line lists what's missing: Aura, Blessing, Righteous Fury or Food.

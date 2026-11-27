@@ -3,7 +3,7 @@
 ## Notes: Protection paladin helper: self-buff tracker and rotation cooldown timeline
 ## Notes-ruRU: Помощник прот-паладина: трекер бафов на себе и таймлайн кулдаунов ротации
 ## Author: Lori Quaid
-## Version: 1.0.6
+## Version: 1.0.7
 ## X-License: MIT
 ## X-Category: Combat
 ## X-Curse-Project-ID: 1826638
