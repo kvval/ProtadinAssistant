@@ -6,7 +6,7 @@ Works out of the box. No other addons needed.
 
 ## Ability timeline
 
-- Your rotation and seal, 10 seconds ahead, with countdowns.
+- Your rotation and seal on a 10-second timeline.
 - Gold icon - what to press now, by your priority.
 - Skips what you can't cast: wrong target, no mana, Hammer of Wrath above 20%.
 - Learns your priority from your play and adjusts it after fights. One chat line shows what moved.
