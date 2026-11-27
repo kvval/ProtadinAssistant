@@ -39,6 +39,8 @@ local KEYS = {
 	"Seals you use:",
 	-- /protadin forget (1.0.6)
 	"Learned priority cleared.",
+	-- pre-pull check, copy window (1.0.6)
+	"Missing: %s.", "Ctrl+A, Ctrl+C to copy",
 }
 
 local T = {}
@@ -115,6 +117,8 @@ T.ruRU = {
 	["Seal"] = "Печать",
 	["Seals you use:"] = "Твои печати:",
 	["Learned priority cleared."] = "Выученный приоритет стёрт.",
+	["Missing: %s."] = "Не хватает: %s.",
+	["Ctrl+A, Ctrl+C to copy"] = "Ctrl+A, Ctrl+C — скопировать",
 }
 
 T.deDE = {
@@ -189,6 +193,8 @@ T.deDE = {
 	["Seal"] = "Siegel",
 	["Seals you use:"] = "Deine Siegel:",
 	["Learned priority cleared."] = "Gelernte Priorität gelöscht.",
+	["Missing: %s."] = "Es fehlt: %s.",
+	["Ctrl+A, Ctrl+C to copy"] = "Strg+A, Strg+C zum Kopieren",
 }
 
 T.frFR = {
@@ -263,6 +269,8 @@ T.frFR = {
 	["Seal"] = "Sceau",
 	["Seals you use:"] = "Vos sceaux :",
 	["Learned priority cleared."] = "Priorité apprise effacée.",
+	["Missing: %s."] = "Manquant : %s.",
+	["Ctrl+A, Ctrl+C to copy"] = "Ctrl+A, Ctrl+C pour copier",
 }
 
 T.esES = {
@@ -337,6 +345,8 @@ T.esES = {
 	["Seal"] = "Sello",
 	["Seals you use:"] = "Tus sellos:",
 	["Learned priority cleared."] = "Prioridad aprendida borrada.",
+	["Missing: %s."] = "Falta: %s.",
+	["Ctrl+A, Ctrl+C to copy"] = "Ctrl+A, Ctrl+C para copiar",
 }
 T.esMX = T.esES
 
@@ -412,6 +422,8 @@ T.ptBR = {
 	["Seal"] = "Selo",
 	["Seals you use:"] = "Seus selos:",
 	["Learned priority cleared."] = "Prioridade aprendida apagada.",
+	["Missing: %s."] = "Faltando: %s.",
+	["Ctrl+A, Ctrl+C to copy"] = "Ctrl+A, Ctrl+C para copiar",
 }
 
 T.itIT = {
@@ -486,6 +498,8 @@ T.itIT = {
 	["Seal"] = "Sigillo",
 	["Seals you use:"] = "I tuoi sigilli:",
 	["Learned priority cleared."] = "Priorità appresa cancellata.",
+	["Missing: %s."] = "Mancante: %s.",
+	["Ctrl+A, Ctrl+C to copy"] = "Ctrl+A, Ctrl+C per copiare",
 }
 
 T.koKR = {
@@ -560,6 +574,8 @@ T.koKR = {
 	["Seal"] = "문장",
 	["Seals you use:"] = "사용하는 문장:",
 	["Learned priority cleared."] = "학습한 우선순위를 지웠습니다.",
+	["Missing: %s."] = "없음: %s.",
+	["Ctrl+A, Ctrl+C to copy"] = "Ctrl+A, Ctrl+C로 복사",
 }
 
 T.zhCN = {
@@ -634,6 +650,8 @@ T.zhCN = {
 	["Seal"] = "圣印",
 	["Seals you use:"] = "你使用的圣印：",
 	["Learned priority cleared."] = "已清除学到的优先级。",
+	["Missing: %s."] = "缺少：%s。",
+	["Ctrl+A, Ctrl+C to copy"] = "Ctrl+A、Ctrl+C 复制",
 }
 
 T.zhTW = {
@@ -708,6 +726,8 @@ T.zhTW = {
 	["Seal"] = "聖印",
 	["Seals you use:"] = "你使用的聖印：",
 	["Learned priority cleared."] = "已清除學到的優先順序。",
+	["Missing: %s."] = "缺少：%s。",
+	["Ctrl+A, Ctrl+C to copy"] = "Ctrl+A、Ctrl+C 複製",
 }
 
 local strings = T[GetLocale()]

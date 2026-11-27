@@ -23,7 +23,8 @@ function B:WantLink(key)
 	if key == "food" then return ns.SpellLink(D.WELL_FED) end
 	if key == "bag" then return ns.SpellLink(D.WELL_RESTED) end
 	if key == "camp" then
-		return D.CAMP_BENEFITS and ns.SpellLink(D.CAMP_BENEFITS) or ("|cffffd200" .. tostring(self:WantName(key)) .. "|r")
+		local id = D.CAMP_BENEFITS or self.db.campBenefitsId
+		return id and ns.SpellLink(id) or ("|cffffd200" .. tostring(self:WantName(key)) .. "|r")
 	end
 	return ns.SpellLink(self:ExpectedSpell(key))
 end
@@ -200,6 +201,10 @@ function B:Enable()
 	f:RegisterEvent("MINIMAP_UPDATE_TRACKING")
 	f:RegisterEvent("BAG_UPDATE_DELAYED")
 	f:RegisterEvent("PLAYER_REGEN_ENABLED")
+	for _, ev in ipairs({ "PLAYER_DEAD", "PLAYER_ALIVE", "PLAYER_UNGHOST", "PLAYER_CONTROL_LOST",
+		"PLAYER_CONTROL_GAINED", "UNIT_ENTERED_VEHICLE", "UNIT_EXITED_VEHICLE", "READY_CHECK" }) do
+		pcall(f.RegisterEvent, f, ev)
+	end
 	f:SetScript("OnEvent", function(_, event, ...) B:OnEvent(event, ...) end)
 
 	local acc = 0
@@ -221,7 +226,8 @@ function B:ApplySettings()
 			self.state = {} -- no "dropped" messages when switched back on
 			return
 		end
-		self.frame:Show()
+		-- dead, on a flight path or in a vehicle: nothing can be fixed, don't blink at the player
+		self.frame:SetShown(not self:IsIdle())
 		for _, s in ipairs(self.SLOTS) do
 			local b = self.buttons[s.key]
 			local spell = self:ExpectedSpell(s.key)
@@ -261,6 +267,35 @@ function B:ApplySettings()
 	end)
 end
 
+-- states in which the buff row has nothing useful to say
+function B:IsIdle()
+	if UnitIsDeadOrGhost("player") then return true end
+	if UnitOnTaxi and UnitOnTaxi("player") then return true end
+	if UnitInVehicle and UnitInVehicle("player") then return true end
+	return false
+end
+
+function B:UpdateIdle()
+	local idle = self:IsIdle()
+	if idle == self.wasIdle then return end
+	self.wasIdle = idle
+	self:ApplySettings() -- shows / hides the row (out of combat)
+end
+
+-- before a pull (ready check, entering a dungeon): one chat line with what's missing.
+-- Tracking, sleeping bag and campfire don't matter for a pull.
+local PREPULL = { "aura", "blessing", "rf", "food" }
+
+function B:PrepullCheck()
+	if not self.db.enabled or self:IsIdle() then return end
+	local missing = {}
+	for _, key in ipairs(PREPULL) do
+		local r = self.state[key]
+		if self:SlotActive(key) and not (r and r.ok) then missing[#missing + 1] = self:WantLink(key) end
+	end
+	if #missing > 0 then ns.Print(L["Missing: %s."]:format(table.concat(missing, ", "))) end
+end
+
 function B:OnLockChanged()
 	self.frame.mover:SetShown(not ns.db.locked)
 end
@@ -287,6 +322,9 @@ function B:EndLoading()
 			self:AutoSlots()
 		end
 		self:Scan()
+		local inInstance = IsInInstance and IsInInstance() or false
+		if inInstance and not self.wasInInstance then self:PrepullCheck() end
+		self.wasInInstance = inInstance
 	end)
 end
 
@@ -321,6 +359,20 @@ function B:OnEvent(event, ...)
 		return
 	end
 	if event == "PLAYER_ENTERING_WORLD" then self:EndLoading() end
+	if event == "READY_CHECK" then
+		self:PrepullCheck()
+		return
+	end
+	if event == "PLAYER_DEAD" or event == "PLAYER_ALIVE" or event == "PLAYER_UNGHOST"
+		or event == "UNIT_ENTERED_VEHICLE" or event == "UNIT_EXITED_VEHICLE" then
+		self:UpdateIdle()
+		return
+	end
+	if event == "PLAYER_CONTROL_LOST" or event == "PLAYER_CONTROL_GAINED" then
+		-- the taxi flag shows up a moment after control changes
+		C_Timer.After(0.5, function() B:UpdateIdle() end)
+		return
+	end
 	if event == "BAG_UPDATE_DELAYED" then
 		-- food in the bags changed: pick again (secure button -> out of combat)
 		self:ApplySettings()
@@ -386,8 +438,10 @@ function B:Scan()
 			take("food")
 		elseif name == N.WellRested or id == D.WELL_RESTED then
 			take("bag")
-		elseif name == N.CampBenefits or (D.CAMP_BENEFITS and id == D.CAMP_BENEFITS) then
+		elseif name == N.CampBenefits or (id and id == (D.CAMP_BENEFITS or db.campBenefitsId)) then
 			take("camp")
+			-- remember its ID: then it's found by ID, in any client language
+			if id and not D.CAMP_BENEFITS and db.campBenefitsId ~= id then db.campBenefitsId = id end
 		end
 	end)
 
@@ -529,5 +583,6 @@ function B:Debug()
 	ns.Print("  known blessings:", table.concat(self.blessingList, ", "))
 	ns.Print("  known auras:", table.concat(self.auraList, ", "))
 	ns.Print("  tracking:", table.concat(self.trackingList, ", "))
-	ns.Print("  campfire kit:", ns.CampfireKitName(), " camp buff:", ns.N.CampBenefits)
+	ns.Print("  campfire kit:", ns.CampfireKitName(), " camp buff:", ns.N.CampBenefits,
+		" id:", tostring(ns.D.CAMP_BENEFITS or self.db.campBenefitsId or "?"))
 end

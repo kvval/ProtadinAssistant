@@ -90,7 +90,8 @@ function ns.BuildNames()
 	N.RF          = Name(D.RIGHTEOUS_FURY) or "Righteous Fury"
 	N.WellFed     = Name(D.WELL_FED) or "Well Fed"
 	N.WellRested  = Name(D.WELL_RESTED) or "Well-Rested"
-	N.CampBenefits = Name(D.CAMP_BENEFITS) or "Camp Benefits"
+	N.CampBenefits = Name(D.CAMP_BENEFITS)
+		or Name(ns.db and ns.db.buffs and ns.db.buffs.campBenefitsId) or "Camp Benefits"
 	N.campfire    = NameList(D.CAMPFIRE)
 
 	N.blessingBase = {}

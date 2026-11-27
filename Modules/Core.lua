@@ -502,6 +502,8 @@ ev:SetScript("OnEvent", function(_, event, arg1)
 		local _, class = UnitClass("player")
 		if class ~= "PALADIN" then return end
 		ns.enabled = true
+		ns.version = (C_AddOns and C_AddOns.GetAddOnMetadata and C_AddOns.GetAddOnMetadata(ADDON, "Version"))
+			or (GetAddOnMetadata and GetAddOnMetadata(ADDON, "Version"))
 		ns.BuildNames()
 		ns.ScanSpellbook()
 		for _, m in ipairs(ns.modules) do m:Enable() end
@@ -521,6 +523,69 @@ ev:SetScript("OnEvent", function(_, event, arg1)
 		end
 	end
 end)
+
+---------------------------------------------------------------------------
+-- Copyable output window (/protadin debug, /protadin auras)
+---------------------------------------------------------------------------
+local copyFrame
+
+local function CopyWindow()
+	if copyFrame then return copyFrame end
+	local f = CreateFrame("Frame", "ProtadinCopyFrame", UIParent, "BackdropTemplate")
+	f:SetSize(560, 360)
+	f:SetPoint("CENTER")
+	f:SetFrameStrata("DIALOG")
+	f:SetBackdrop({ bgFile = "Interface\\Buttons\\WHITE8X8", edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
+		edgeSize = 14, insets = { left = 3, right = 3, top = 3, bottom = 3 } })
+	f:SetBackdropColor(0, 0, 0, 0.92)
+	f:EnableMouse(true)
+	f:SetMovable(true)
+	f:RegisterForDrag("LeftButton")
+	f:SetScript("OnDragStart", f.StartMoving)
+	f:SetScript("OnDragStop", f.StopMovingOrSizing)
+	if UISpecialFrames then tinsert(UISpecialFrames, "ProtadinCopyFrame") end -- Esc closes it
+
+	local title = f:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+	title:SetPoint("TOPLEFT", 12, -10)
+	title:SetText(ns.L["Ctrl+A, Ctrl+C to copy"])
+
+	local close = CreateFrame("Button", nil, f, "UIPanelCloseButton")
+	close:SetPoint("TOPRIGHT", 0, 0)
+
+	local ok, scroll = pcall(CreateFrame, "ScrollFrame", nil, f, "ScrollFrameTemplate")
+	if not ok then scroll = CreateFrame("ScrollFrame", nil, f, "UIPanelScrollFrameTemplate") end
+	scroll:SetPoint("TOPLEFT", 12, -30)
+	scroll:SetPoint("BOTTOMRIGHT", -30, 12)
+	local edit = CreateFrame("EditBox", nil, scroll)
+	edit:SetMultiLine(true)
+	edit:SetAutoFocus(false)
+	edit:SetFontObject(ChatFontNormal)
+	edit:SetWidth(510)
+	edit:SetScript("OnEscapePressed", function() f:Hide() end)
+	scroll:SetScrollChild(edit)
+	f.edit = edit
+	copyFrame = f
+	return f
+end
+
+-- run fn, collect what it prints into a copyable window instead of the chat
+function ns.CaptureToWindow(fn)
+	local lines, realPrint = {}, ns.Print
+	ns.Print = function(...)
+		local t = {}
+		for i = 1, select("#", ...) do t[i] = tostring((select(i, ...))) end
+		local line = table.concat(t, " "):gsub("|c%x%x%x%x%x%x%x%x", ""):gsub("|r", ""):gsub("|H.-|h(.-)|h", "%1")
+		lines[#lines + 1] = line
+	end
+	local ok, err = pcall(fn)
+	ns.Print = realPrint
+	if not ok then lines[#lines + 1] = "error: " .. tostring(err) end
+	local f = CopyWindow()
+	f.edit:SetText(table.concat(lines, "\n"))
+	f:Show()
+	f.edit:SetFocus()
+	f.edit:HighlightText()
+end
 
 ---------------------------------------------------------------------------
 -- Slash commands
@@ -543,6 +608,7 @@ SlashCmdList.PROTADIN = function(msg)
 		ns.Print(L["Learned priority cleared."])
 		if ns.RefreshOptions then ns.RefreshOptions() end
 	elseif cmd == "auras" then
+		ns.CaptureToWindow(function()
 		ns.Print(L["buffs on you:"])
 		local readable = ns.ForEachPlayerAura(function(a)
 			if ns.IsSecret(a.name) then ns.Print("  " .. L["(hidden in combat)"]) return true end
@@ -551,8 +617,12 @@ SlashCmdList.PROTADIN = function(msg)
 			ns.Print(("  %s  (spell %s, icon %s)"):format(a.name, tostring(id), tostring(icon)))
 		end)
 		if not readable then ns.Print("  " .. L["(hidden in combat)"]) end
+		end)
 	elseif cmd == "debug" then
-		for _, m in ipairs(ns.modules) do if m.Debug then m:Debug() end end
+		ns.CaptureToWindow(function()
+			ns.Print("Protadin Assistant " .. tostring(ns.version or "?") .. ", client " .. tostring((GetBuildInfo and select(1, GetBuildInfo())) or "?"))
+			for _, m in ipairs(ns.modules) do if m.Debug then m:Debug() end end
+		end)
 	elseif cmd == "" or cmd == "options" or cmd == "config" then
 		ns.OpenOptions()
 	else
