@@ -38,6 +38,9 @@ check "seal" "lua5.1 tools/seal_test.lua . enUS" "SEAL TEST DONE"
 check "chat links" "lua5.1 tools/links_test.lua . enUS" "LINKS TEST DONE"
 check "idle / pre-pull" "lua5.1 tools/idle_prepull_test.lua . enUS" "IDLE PREPULL TEST DONE"
 check "stored by spell ID" "lua5.1 tools/storage_test.lua . enUS" "loaded wins:	Правосудие	->	Щит небес	12.5"
+check "talents forget cooldowns, login ignored" "lua5.1 tools/talent_test.lua . enUS" "at login:	8"
+check "talent change clears learned" "lua5.1 tools/talent_test.lua . enUS" "after respec:	nil"
+check "cooldowns asked only after events" "lua5.1 tools/talent_test.lua . enUS" "queries in 10 s without events:	5"
 
 [ $fail -eq 0 ] && echo "ALL CHECKS PASSED" || echo "SOME CHECKS FAILED"
 exit $fail

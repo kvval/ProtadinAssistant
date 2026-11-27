@@ -4,6 +4,10 @@ local T = {}
 ns.timeline = T
 table.insert(ns.modules, T)
 
+-- talent changes can change cooldowns (see T:OnEvent)
+local TALENT_EVENTS = { "CHARACTER_POINTS_CHANGED", "PLAYER_TALENT_UPDATE",
+	"ACTIVE_TALENT_GROUP_CHANGED", "TRAIT_CONFIG_UPDATED" }
+
 local L = ns.L
 local SEAL_KEY = "__seal"
 local NEXT_SCALE = 1.32  -- "press this" icon size vs. normal icons
@@ -390,6 +394,11 @@ function T:Enable()
 	f:RegisterEvent("PLAYER_REGEN_ENABLED")
 	f:RegisterEvent("SPELLS_CHANGED")
 	f:RegisterEvent("SPELL_UPDATE_COOLDOWN")
+	self.isTalentEvent = {}
+	for _, ev in ipairs(TALENT_EVENTS) do
+		if pcall(f.RegisterEvent, f, ev) then self.isTalentEvent[ev] = true end
+	end
+	self.talentsFrom = GetTime() + 5
 	f:RegisterEvent("PLAYER_TARGET_CHANGED")
 	f:RegisterUnitEvent("UNIT_AURA", "player")
 	f:RegisterUnitEvent("UNIT_SPELLCAST_SUCCEEDED", "player")
@@ -462,6 +471,13 @@ function T:OnEvent(event, ...)
 	self.queryTick = (self.queryTick or 0) + 1
 	self.usableTick = (self.usableTick or 0) + 1
 	if event == "SPELL_UPDATE_COOLDOWN" then return end
+	if self.isTalentEvent[event] then
+		-- talents can change cooldowns: forget the learned durations, the first
+		-- cast out of combat learns them again (until then: the base cooldown).
+		-- The client also sends these at login - ignore the first seconds.
+		if GetTime() > (self.talentsFrom or 0) then wipe(self.db.learned) end
+		return
+	end
 	if event == "PLAYER_REGEN_DISABLED" then
 		self.inCombat = true
 		self.castsSecret = nil
@@ -822,12 +838,11 @@ end
 -- seal is up = "ready"), or nil + false + durationObject when only fallback B
 -- can show it
 -- The client is asked about cooldowns only when something changed (any event
--- of ours, SPELL_UPDATE_COOLDOWN included) and once a second as a safety net -
+-- of ours: casts, SPELL_UPDATE_COOLDOWN, combat start / end, spells, target) -
 -- never every frame: each answer is a new table, so asking every frame made
--- megabytes of garbage a minute. Between queries the remaining time is worked
+-- megabytes of garbage a minute. Between events the remaining time is worked
 -- out from the stored end time. Usable / in range (plain true/false answers,
 -- no garbage) are asked USABLE_EVERY seconds.
-local QUERY_EVERY = 1
 local USABLE_EVERY = 0.1
 
 function T:Remaining(e, now)
@@ -917,10 +932,7 @@ function T:Update()
 	local db = self.db
 	local now, S, H = GetTime(), db.iconSize, db.horizon
 	local SOON = 1.5 -- one global cooldown
-	if now - (self.lastQuery or 0) >= QUERY_EVERY then
-		self.lastQuery = now
-		self.queryTick = (self.queryTick or 0) + 1
-	end
+	self.queryTick = self.queryTick or 0
 	if now - (self.lastUsable or 0) >= USABLE_EVERY then
 		self.lastUsable = now
 		self.usableTick = (self.usableTick or 0) + 1
