@@ -328,6 +328,10 @@ function O:Build()
 	lt:SetJustifyH("LEFT")
 	lt:SetWordWrap(true)
 	self.learnText = lt
+	local st = lh:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+	st:SetJustifyH("LEFT")
+	st:SetWordWrap(true)
+	self.sealText = st
 
 	local apply = CreateFrame("Button", nil, p, "UIPanelButtonTemplate")
 	apply:SetSize(120, 22)
@@ -427,10 +431,28 @@ function O:Refresh()
 		row:Show()
 		anchor = row
 	end
+	-- seals you use
+	local st = self.sealText
+	local stats = T:SealStats()
+	st:ClearAllPoints()
+	st:SetWidth(math.max(260, (self.content:GetWidth() or 600) - 90))
+	if #stats > 0 then
+		local parts = {}
+		for i = 1, math.min(#stats, 5) do
+			parts[i] = ("%s %d%%"):format(stats[i].name, math.floor(stats[i].share * 100 + 0.5))
+		end
+		st:SetText(L["Seals you use:"] .. " " .. table.concat(parts, " · "))
+		st:SetPoint("TOPLEFT", anchor, "BOTTOMLEFT", 4, -12)
+		st:Show()
+		anchor = st
+	else
+		st:Hide()
+	end
+
 	-- "from your play"
 	local lt, apply = self.learnText, self.learnApply
 	lt:ClearAllPoints()
-	lt:SetPoint("TOPLEFT", anchor, "BOTTOMLEFT", 4, -12)
+	lt:SetPoint("TOPLEFT", anchor, "BOTTOMLEFT", st:IsShown() and 0 or 4, st:IsShown() and -8 or -12)
 	lt:SetWidth(math.max(260, (self.content:GetWidth() or 600) - 90))
 	local order, n = T:LearnedOrder()
 	if n < T.LEARN_MIN then

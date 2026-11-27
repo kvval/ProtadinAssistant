@@ -49,6 +49,41 @@ function T:BuildCandidates()
 	self.candidates = list
 end
 
+-- Seal popularity: how often each seal is put up (older casts fade, half
+-- weight after SEAL_HALF_LIFE casts). The most used one is what "Suggest
+-- next" shows when no seal is up.
+local SEAL_HALF_LIFE = 100
+local SEAL_DECAY = 0.5 ^ (1 / SEAL_HALF_LIFE)
+
+function T:NoteSeal(name)
+	local seals = self.db.learn.seals or {}
+	self.db.learn.seals = seals
+	for n, v in pairs(seals) do
+		v = v * SEAL_DECAY
+		seals[n] = v >= 0.01 and v or nil
+	end
+	seals[name] = (seals[name] or 0) + 1
+end
+
+-- seals by use, most used first: { { name, share }, ... }
+function T:SealStats()
+	local seals = (self.db.learn and self.db.learn.seals) or {}
+	local list, total = {}, 0
+	for n, v in pairs(seals) do list[#list + 1] = { name = n, w = v }; total = total + v end
+	table.sort(list, function(a, b) return a.w > b.w end)
+	for _, x in ipairs(list) do x.share = total > 0 and x.w / total or 0 end
+	return list
+end
+
+-- icon of the seal to suggest: the most used one the player knows
+function T:PopularSealIcon()
+	for _, x in ipairs(self:SealStats()) do
+		local s = ns.spellbook and ns.spellbook[x.name]
+		if s then return s.icon end
+	end
+	return self.sealIcon
+end
+
 -- what the player sees for an entry name (the seal has an internal key)
 function T:DisplayName(name)
 	if name == SEAL_KEY then return L["Seal"] end
@@ -452,6 +487,7 @@ function T:OnCast(spellID)
 	if not name then return end
 	local now = GetTime()
 	if ns.IsSealName(name) then
+		self:NoteSeal(name)
 		self.sealSpellId = spellID
 		local se = self.byName and self.byName[SEAL_KEY]
 		if se then
@@ -565,6 +601,20 @@ function T:IsSituational(name)
 	return a.usable / a.ready < SITUATIONAL_SHARE
 end
 
+-- an entry for chat: a clickable spell link (the seal stays plain text)
+function T:ChatName(name)
+	if name == SEAL_KEY then return self:DisplayName(name) end
+	local e = self.byName and self.byName[name]
+	return ns.SpellLink((e and e.id) or name)
+end
+
+-- an order for chat, as links
+function T:ChatOrder(order)
+	local out = {}
+	for i, n in ipairs(order) do out[i] = self:ChatName(n) end
+	return table.concat(out, " > ")
+end
+
 -- an order as text; situational spells in [brackets]
 function T:FormatOrder(order)
 	local out = {}
@@ -630,7 +680,7 @@ local function Swaps(cur, new)
 	for i = 1, #new do
 		if a[i] ~= new[i] and pos[new[i]] then
 			local j = pos[new[i]]
-			out[#out + 1] = T:DisplayName(new[i]) .. " <-> " .. T:DisplayName(a[i])
+			out[#out + 1] = T:ChatName(new[i]) .. " <-> " .. T:ChatName(a[i])
 			a[i], a[j] = a[j], a[i]
 			pos[a[i]], pos[a[j]] = i, j
 		end
@@ -656,7 +706,7 @@ function T:AutoAdapt()
 	local swaps = Swaps(cur, order)
 	if #swaps == 0 then return end
 	self:ApplyLearned()
-	ns.Print(L["priority %s."]:format("|cffffd200" .. table.concat(swaps, ", ") .. "|r"))
+	ns.Print(L["priority %s."]:format(table.concat(swaps, ", ")))
 	if ns.RefreshOptions then ns.RefreshOptions() end
 end
 
@@ -685,7 +735,7 @@ function T:ApplyLearnedFromUI()
 		return
 	end
 	self:ApplyLearned()
-	ns.Print(L["Priority applied: %s"]:format("|cffffd200" .. self:FormatOrder(order) .. "|r"))
+	ns.Print(L["Priority applied: %s"]:format(self:ChatOrder(order)))
 	if ns.RefreshOptions then ns.RefreshOptions() end
 end
 
@@ -889,7 +939,7 @@ function T:Update()
 	if showNx then
 		if nx.key ~= nextEntry.key then
 			nx.key = nextEntry.key
-			nx.tex:SetTexture(nextEntry.isSeal and self.sealIcon or nextEntry.icon)
+			nx.tex:SetTexture(nextEntry.isSeal and self:PopularSealIcon() or nextEntry.icon)
 			nx.fadeIn:Stop()
 			if handover then nx:SetAlpha(1) else nx.fadeIn:Play() end
 			nx.glowIn:Stop(); nx.glowIn:Play()

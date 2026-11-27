@@ -17,6 +17,17 @@ B.SLOTS = {
 	{ key = "camp" },
 }
 
+-- the same as a clickable chat link (Camp Benefits has no known ID: plain text)
+function B:WantLink(key)
+	local D = ns.D
+	if key == "food" then return ns.SpellLink(D.WELL_FED) end
+	if key == "bag" then return ns.SpellLink(D.WELL_RESTED) end
+	if key == "camp" then
+		return D.CAMP_BENEFITS and ns.SpellLink(D.CAMP_BENEFITS) or ("|cffffd200" .. tostring(self:WantName(key)) .. "|r")
+	end
+	return ns.SpellLink(self:ExpectedSpell(key))
+end
+
 -- what the player should have in a slot (shown in tooltips / chat)
 function B:WantName(key)
 	local N = ns.N
@@ -444,11 +455,11 @@ function B:Commit(res)
 		-- warn on transition ok -> not ok (or to a wrong one)
 		if self.db.chat and not dead and self:SlotActive(key) and p and not r.ok
 			and (p.ok or (r.wrong and r.wrong ~= p.wrong)) then
-			local want = self:WantName(key)
+			local want = self:WantLink(key)
 			if r.wrong then
-				ns.Print(L["%s is up, expected %s"]:format("|cffff5555" .. r.wrong .. "|r", "|cffffd200" .. tostring(want) .. "|r"))
+				ns.Print(L["%s is up, expected %s"]:format(ns.SpellLink(r.wrong), want))
 			else
-				ns.Print(L["%s has faded"]:format("|cffffd200" .. tostring(want) .. "|r"))
+				ns.Print(L["%s has faded"]:format(want))
 			end
 		end
 		self:Render(key)

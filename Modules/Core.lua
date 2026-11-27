@@ -59,6 +59,17 @@ function ns.GetSpellInfo(spell)
 	return name, icon, id
 end
 
+-- a clickable chat link for a spell (by ID or name); plain name if none
+function ns.SpellLink(spell)
+	if not spell then return "?" end
+	local f = (C_Spell and C_Spell.GetSpellLink) or GetSpellLink
+	if f then
+		local ok, link = pcall(f, spell)
+		if ok and type(link) == "string" and not ns.IsSecret(link) then return link end
+	end
+	return (ns.GetSpellInfo(spell)) or tostring(spell)
+end
+
 -- returns table { startTime, duration, isEnabled, isOnGCD } or nil
 function ns.GetCooldown(spellID)
 	if C_Spell and C_Spell.GetSpellCooldown then

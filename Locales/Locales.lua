@@ -35,6 +35,8 @@ local KEYS = {
 	"Adapt automatically", "After a fight, once 25 new choices are in.", "priority %s.",
 	-- seal as a rotation entry (1.0.4)
 	"Seal",
+	-- seal popularity (1.0.4)
+	"Seals you use:",
 }
 
 local T = {}
@@ -109,6 +111,7 @@ T.ruRU = {
 	["After a fight, once 25 new choices are in."] = "После боя, когда наберётся 25 новых выборов.",
 	["priority %s."] = "приоритет: %s.",
 	["Seal"] = "Печать",
+	["Seals you use:"] = "Твои печати:",
 }
 
 T.deDE = {
@@ -181,6 +184,7 @@ T.deDE = {
 	["After a fight, once 25 new choices are in."] = "Nach einem Kampf, sobald 25 neue Entscheidungen vorliegen.",
 	["priority %s."] = "Priorität: %s.",
 	["Seal"] = "Siegel",
+	["Seals you use:"] = "Deine Siegel:",
 }
 
 T.frFR = {
@@ -253,6 +257,7 @@ T.frFR = {
 	["After a fight, once 25 new choices are in."] = "Après un combat, dès 25 nouveaux choix.",
 	["priority %s."] = "priorité : %s.",
 	["Seal"] = "Sceau",
+	["Seals you use:"] = "Vos sceaux :",
 }
 
 T.esES = {
@@ -325,6 +330,7 @@ T.esES = {
 	["After a fight, once 25 new choices are in."] = "Tras un combate, cuando haya 25 elecciones nuevas.",
 	["priority %s."] = "prioridad: %s.",
 	["Seal"] = "Sello",
+	["Seals you use:"] = "Tus sellos:",
 }
 T.esMX = T.esES
 
@@ -398,6 +404,7 @@ T.ptBR = {
 	["After a fight, once 25 new choices are in."] = "Depois de um combate, quando houver 25 novas escolhas.",
 	["priority %s."] = "prioridade: %s.",
 	["Seal"] = "Selo",
+	["Seals you use:"] = "Seus selos:",
 }
 
 T.itIT = {
@@ -470,6 +477,7 @@ T.itIT = {
 	["After a fight, once 25 new choices are in."] = "Dopo un combattimento, quando ci sono 25 nuove scelte.",
 	["priority %s."] = "priorità: %s.",
 	["Seal"] = "Sigillo",
+	["Seals you use:"] = "I tuoi sigilli:",
 }
 
 T.koKR = {
@@ -542,6 +550,7 @@ T.koKR = {
 	["After a fight, once 25 new choices are in."] = "전투 후, 새 선택이 25번 쌓이면.",
 	["priority %s."] = "우선순위: %s.",
 	["Seal"] = "문장",
+	["Seals you use:"] = "사용하는 문장:",
 }
 
 T.zhCN = {
@@ -614,6 +623,7 @@ T.zhCN = {
 	["After a fight, once 25 new choices are in."] = "战斗结束后，新增 25 次选择时。",
 	["priority %s."] = "优先级：%s。",
 	["Seal"] = "圣印",
+	["Seals you use:"] = "你使用的圣印：",
 }
 
 T.zhTW = {
@@ -686,6 +696,7 @@ T.zhTW = {
 	["After a fight, once 25 new choices are in."] = "戰鬥結束後，新增 25 次選擇時。",
 	["priority %s."] = "優先順序：%s。",
 	["Seal"] = "聖印",
+	["Seals you use:"] = "你使用的聖印：",
 }
 
 local strings = T[GetLocale()]
