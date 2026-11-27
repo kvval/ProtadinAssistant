@@ -6,7 +6,7 @@ Works out of the box. No other addons needed.
 
 ## Ability timeline
 
-- Your rotation and seal on a 10-second timeline.
+- Your rotation and Seal on a 10-second timeline.
 - Next spell, based on YOUR play style.
 - Skips what you can't cast: wrong target, no mana, Hammer of Wrath above 20%.
 - Learns as you fight. Changes show up in chat.
