@@ -37,6 +37,20 @@ local order, n = T:LearnedOrder()
 print("choices:", n)
 print("learned:", table.concat(order, " > "))
 print("taste:  ", table.concat(taste, " > "))
+-- casts that only follow the "Suggest next" hint are not learned
+T.db.showNext = true
+T.nextIcon = { key = "Holy Strike", IsShown = function() return true end }
+local before = T.db.learn.choices
+ready = { ["Holy Strike"] = true, ["Judgement"] = true }
+local hs; for _, x in ipairs(T.entries) do if x.name == "Holy Strike" then hs = x end end
+hs.key = "Holy Strike"
+T:LearnFromCast(hs, 0)
+print("followed the hint -> not learned:", T.db.learn.choices == before)
+local j; for _, x in ipairs(T.entries) do if x.name == "Judgement" then j = x end end
+j.key = "Judgement"
+T:LearnFromCast(j, 0)
+print("pressed something else -> learned:", T.db.learn.choices == before + 1)
+T.nextIcon = nil
 T:ApplyLearned()
 local t = {}; for i, s in ipairs(T:EnabledByPriority()) do t[i] = s.name end
 print("applied:", table.concat(t, " > "))

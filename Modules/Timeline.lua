@@ -452,6 +452,10 @@ local MIN_PAIR = 3   -- comparisons needed before a pair counts
 -- too, the player preferred this one over each of them
 function T:LearnFromCast(e, now)
 	if not self.inCombat then return end
+	-- pressing exactly what "Suggest next" showed is following the hint, not the
+	-- player's own choice; counting it would make the order confirm itself
+	local nx = self.nextIcon
+	if self.db.showNext and nx and nx:IsShown() and nx.key == e.key then return end
 	local others = {}
 	for _, o in ipairs(self.entries or {}) do
 		if not o.isSeal and o ~= e then
