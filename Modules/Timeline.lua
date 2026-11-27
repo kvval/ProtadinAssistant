@@ -465,22 +465,34 @@ T.WilsonLow = WilsonLow
 -- too, the player preferred this one over each of them
 function T:LearnFromCast(e, now)
 	if not self.inCombat then return end
+	local learn = self.db.learn
+
+	-- which rotation spells are off cooldown, and which of those can be cast
+	local readyNames, usable = {}, {}
+	for _, o in ipairs(self.entries or {}) do
+		if not o.isSeal and o ~= e then
+			local rem, missing, secretDur = self:Remaining(o, now)
+			if secretDur == nil and not missing and rem and rem <= 0 then
+				readyNames[#readyNames + 1] = o.name
+				usable[o.name] = ns.IsUsable(o.id) and ns.InRange(o.id) or false
+			end
+		end
+	end
+	readyNames[#readyNames + 1] = e.name
+	usable[e.name] = true -- it was just cast
+	self:NoteAvailability(readyNames, usable)
+
 	-- pressing exactly what "Suggest next" showed is following the hint, not the
 	-- player's own choice; counting it would make the order confirm itself
 	local nx = self.nextIcon
 	if self.db.showNext and nx and nx:IsShown() and nx.key == e.key then return end
+	-- situational spells (usable only now and then) stay where the player put them
+	if self:IsSituational(e.name) then return end
 	local others = {}
-	for _, o in ipairs(self.entries or {}) do
-		if not o.isSeal and o ~= e then
-			local rem, missing, secretDur = self:Remaining(o, now)
-			if secretDur == nil and not missing and rem and rem <= 0
-				and ns.IsUsable(o.id) and ns.InRange(o.id) then
-				others[#others + 1] = o.name
-			end
-		end
+	for _, n in ipairs(readyNames) do
+		if n ~= e.name and usable[n] and not self:IsSituational(n) then others[#others + 1] = n end
 	end
 	if #others == 0 then return end
-	local learn = self.db.learn
 	learn.choices = (learn.choices or 0) + 1
 	-- everything learned so far gets a little older (half weight after HALF_LIFE choices)
 	for _, row in pairs(learn.wins) do
@@ -494,7 +506,43 @@ function T:LearnFromCast(e, now)
 	for _, n in ipairs(others) do w[n] = (w[n] or 0) + 1 end
 end
 
+-- How often is a spell castable when it's off cooldown? Exorcism (undead and
+-- demons only) and Hammer of Wrath (target below 20%) mostly are not: such
+-- "situational" spells are left out of learning and keep their place.
+local SITUATIONAL_SHARE = 0.5 -- castable in less than half of the cases
+local SITUATIONAL_MIN = 10    -- (weighted) observations needed to decide
+
+function T:NoteAvailability(names, usable)
+	local learn = self.db.learn
+	learn.avail = learn.avail or {}
+	for _, a in pairs(learn.avail) do
+		a.ready, a.usable = a.ready * DECAY, a.usable * DECAY
+	end
+	for _, n in ipairs(names) do
+		local a = learn.avail[n] or { ready = 0, usable = 0 }
+		learn.avail[n] = a
+		a.ready = a.ready + 1
+		if usable[n] then a.usable = a.usable + 1 end
+	end
+end
+
+function T:IsSituational(name)
+	local avail = self.db.learn.avail
+	local a = avail and avail[name]
+	if not a or a.ready < SITUATIONAL_MIN then return false end
+	return a.usable / a.ready < SITUATIONAL_SHARE
+end
+
+-- an order as text; situational spells in [brackets]
+function T:FormatOrder(order)
+	local out = {}
+	for i, n in ipairs(order) do out[i] = self:IsSituational(n) and ("[" .. n .. "]") or n end
+	return table.concat(out, " > ")
+end
+
 -- enabled spells ordered by the player's choices; returns names, #choices.
+-- Situational spells keep their current positions; the rest are ordered by
+-- the learned choices around them.
 -- A ranks above B when A was picked over B more often than the reverse
 -- (a pair only counts with at least MIN_PAIR comparisons and a winner whose
 -- Wilson lower bound is above 50%, so a handful of lucky casts can't decide
@@ -505,8 +553,12 @@ function T:LearnedOrder()
 	local wins = learn.wins
 	local function w(a, b) return (wins[a] and wins[a][b]) or 0 end
 	local names, cur, score, won, seen = {}, {}, {}, {}, {}
-	for i, s in ipairs(self:EnabledByPriority()) do
-		names[i], cur[s.name] = s.name, i
+	local fixed = {} -- position -> situational spell
+	local enabled = self:EnabledByPriority()
+	for i, s in ipairs(enabled) do
+		cur[s.name] = i
+		if self:IsSituational(s.name) then fixed[i] = s.name
+		else names[#names + 1] = s.name end
 	end
 	for _, a in ipairs(names) do
 		score[a], won[a], seen[a] = 0, 0, 0
@@ -528,7 +580,12 @@ function T:LearnedOrder()
 		if ra ~= rb then return ra > rb end
 		return cur[a] < cur[b]
 	end)
-	return names, learn.choices or 0
+	local order, k = {}, 1
+	for i = 1, #enabled do
+		if fixed[i] then order[i] = fixed[i]
+		else order[i] = names[k]; k = k + 1 end
+	end
+	return order, learn.choices or 0
 end
 
 -- how different is the learned order from the current one?
@@ -565,7 +622,7 @@ function T:CheckLearnNotice()
 	if learn.lastNoticeAt and now - learn.lastNoticeAt < NOTICE_INTERVAL then return end
 	learn.lastNoticeAt, learn.lastNoticeOrder = now, key
 	ns.Print(L["Your play suggests a new priority: %s. Open /protadin to apply it."]:format(
-		"|cffffd200" .. table.concat(order, " > ") .. "|r"))
+		"|cffffd200" .. self:FormatOrder(order) .. "|r"))
 end
 
 function T:ApplyLearned()
@@ -593,7 +650,7 @@ function T:ApplyLearnedFromUI()
 		return
 	end
 	self:ApplyLearned()
-	ns.Print(L["Priority applied: %s"]:format("|cffffd200" .. table.concat(order, " > ") .. "|r"))
+	ns.Print(L["Priority applied: %s"]:format("|cffffd200" .. self:FormatOrder(order) .. "|r"))
 	if ns.RefreshOptions then ns.RefreshOptions() end
 end
 
