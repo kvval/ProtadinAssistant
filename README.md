@@ -6,9 +6,13 @@ Download: https://www.curseforge.com/projects/1826638
 
 ## What's here
 
-- `ProtadinAssistant/` - the addon itself (this folder goes into `Interface/AddOns`)
-- `tools/` - local tests that run the addon on a mocked WoW API (Lua 5.1)
+The repository root is the addon itself (`ProtadinAssistant.toc`, the `.lua` files, `Libs/`). Besides that:
+
+- `tools/` - local tests that run the addon on a mocked WoW API (Lua 5.1), and `install.sh` to copy the addon into the game
 - `PROJECT.md` - notes: how it works, client quirks, history
+- `curseforge-description.md` - the CurseForge page text
+
+These are not included in the released zip (see `.pkgmeta`).
 
 ## Releases
 

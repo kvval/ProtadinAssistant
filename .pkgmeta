@@ -5,3 +5,11 @@ package-as: ProtadinAssistant
 manual-changelog:
   filename: CHANGELOG.md
   markup-type: markdown
+
+# project files that are not part of the addon
+ignore:
+  - tools
+  - dist
+  - PROJECT.md
+  - README.md
+  - curseforge-description.md

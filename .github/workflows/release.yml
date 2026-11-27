@@ -19,9 +19,6 @@ jobs:
           fetch-depth: 0
 
       - uses: BigWigsMods/packager@v2
-        with:
-          # the addon lives in a subfolder of the repository
-          args: -t ProtadinAssistant
         env:
           CF_API_KEY: ${{ secrets.CURSEFORGE }}
           GITHUB_OAUTH: ${{ secrets.GITHUB_TOKEN }}

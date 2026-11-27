@@ -7,11 +7,11 @@ Current version: **1.0.3** (2026-11-27).
 
 | What | Where |
 |---|---|
-| Source code | `/mnt/d/VC/paladon/ProtadinAssistant/` |
-| Installed copy (game) | `C:\WarCraft\World of Warcraft\_forever_\Interface\AddOns\ProtadinAssistant\` - a copy, not a link; re-copy after every change |
+| Source code | `/mnt/d/VC/paladon/` - the repository root is the addon (toc, lua, Libs) |
+| Installed copy (game) | `C:\WarCraft\World of Warcraft\_forever_\Interface\AddOns\ProtadinAssistant\` - a copy, not a link; run `tools/install.sh` after every change |
 | Release zips | `/mnt/d/VC/paladon/dist/` (latest: `ProtadinAssistant-1.0.3.zip`, must include `Libs/`) |
 | CurseForge page text | `/mnt/d/VC/paladon/curseforge-description.md` |
-| Changelog for CurseForge | `ProtadinAssistant/CHANGELOG.md` (used by the packager) |
+| Changelog for CurseForge | `CHANGELOG.md` (used by the packager) |
 | In-game Lua errors | `_forever_\Logs\General.log`, lines with `[E][Lua]` (written on exit / reload) |
 | Saved settings | `_forever_\WTF\Account\<ACCOUNT>\SavedVariables\ProtadinAssistant.lua` |
 
@@ -90,10 +90,10 @@ Test character: Lori-Quaid (Protection paladin, English client).
 
 ## Releasing (GitHub + CurseForge)
 
-Repository: https://github.com/kvval/ProtadinAssistant (this whole folder; `dist/` is ignored).
+Repository: https://github.com/kvval/ProtadinAssistant. The repository root is the addon; `tools/`, notes and texts are left out of the zip by `.pkgmeta`, `dist/` is not in git at all.
 
-1. Bump `## Version:` in `ProtadinAssistant/ProtadinAssistant.toc`.
-2. Update `ProtadinAssistant/CHANGELOG.md` - the packager uploads it as the release changelog.
+1. Bump `## Version:` in `ProtadinAssistant.toc`.
+2. Update `CHANGELOG.md` - the packager uploads it as the release changelog.
 3. Commit and push to `main`.
 4. Only when the author says so: tag and push the tag, e.g. `git tag v1.0.4 && git push origin v1.0.4`.
 5. GitHub Actions (`.github/workflows/release.yml`) runs the BigWigs packager: it builds the zip and uploads it to CurseForge (project 1826638, from `X-Curse-Project-ID` in the toc) and to GitHub Releases.
