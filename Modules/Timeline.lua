@@ -601,9 +601,14 @@ function T:IsSituational(name)
 	return a.usable / a.ready < SITUATIONAL_SHARE
 end
 
--- an entry for chat: a clickable spell link (the seal stays plain text)
+-- an entry for chat: a clickable spell link (the seal: the most used seal,
+-- plain "Seal" until there is any data)
 function T:ChatName(name)
-	if name == SEAL_KEY then return self:DisplayName(name) end
+	if name == SEAL_KEY then
+		local top = self:SealStats()[1]
+		if top and ns.spellbook and ns.spellbook[top.name] then return ns.SpellLink(top.name) end
+		return self:DisplayName(name)
+	end
 	local e = self.byName and self.byName[name]
 	return ns.SpellLink((e and e.id) or name)
 end
