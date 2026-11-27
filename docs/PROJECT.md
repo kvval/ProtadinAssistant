@@ -123,8 +123,8 @@ GitHub repo settings worth having (author does them in the browser): About with 
 
 ## Open items
 
-- [ ] Run a dungeon and check there are no Lua errors (the 0.3.1 aura-restriction fix is untested in a real instance).
-- [ ] Try clicks in game: minimap button, food, campfire kit.
+- [x] Dungeon run without Lua errors (author, 2026-11-27).
+- [x] In-game clicks: minimap button, food, campfire kit look fine (author, 2026-11-27).
 - [ ] Once the Camp Benefits ID is seen (`/protadin debug` shows it), hardcode it in `Data.lua` (`CAMP_BENEFITS`) for every user.
 - [ ] Undecided: running `tools/run_all.sh` as a step before the packager in `release.yml` (the auto-mode classifier blocked editing the workflow; the author can allow it or add the step in the browser).
 - [ ] Optional: update `actions/checkout` to a Node 24 version when the deprecation warning starts to matter.
