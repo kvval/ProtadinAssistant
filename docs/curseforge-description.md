@@ -10,7 +10,7 @@ Two small frames on the screen. That's it.
 2. **One click to fix.** Click the icon and it recasts the buff, eats your XP food (the stack you have the least of) or puts down the sleeping bag / campfire kit.
 3. **Cooldown timeline.** Shows 10 seconds ahead. Your rotation spells and your seal slide to "now" with a countdown.
 4. **What to press.** A gold icon shows the best spell right now, by your priority. It skips spells that won't work, like Exorcism on a beast or Hammer of Wrath above 20%.
-5. **Learns your style.** It looks at what you press when several spells are ready and suggests your own priority. Apply it with one click or ignore it. Nothing changes by itself.
+5. **Learns your style.** It looks at what you press when several spells are ready and adjusts your priority after fights. One short chat line tells what changed, like "Holy Shield <-> Judgement". Rare spells like Exorcism keep the place you gave them. Don't want it - turn it off in the options.
 
 ## Nothing extra
 

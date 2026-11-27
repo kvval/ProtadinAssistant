@@ -26,14 +26,14 @@ local KEYS = {
 	"Rotation, by prio", "+ add a spell", "— none —",
 	"From your play:", "Learning from your play: %d of %d choices.", "(same as now)",
 	"Apply", "Forget", "Use this order for the rotation.", "Forget what was learned from your play.",
-	"Your play suggests a new priority: %s. Open /protadin to apply it.",
-	"Announce play style change", "At most once a day.",
 	-- chat messages (0.7.1)
 	"%s has faded", "%s is up, expected %s", "Buff buttons will update after combat.", "Protadin Assistant works only on paladins.", "Frames locked.", "Frames unlocked: drag them, then /protadin lock.", "Can't do that in combat.", "Positions reset.",
 	-- minimap button (0.8)
 	"Left-click", "Right-click", "Shift + left-click", "Shift + right-click", "Ctrl + left-click", "Ctrl + right-click", "Apply priority from your play", "Options", "Lock / unlock frames", "List buffs on you", "Debug info", "Not enough data yet: %d of %d choices.", "Priority already matches your play.", "Priority applied: %s", "Show minimap button",
 	-- first run (1.0.2)
 	"Protadin Assistant loaded. Right-click the minimap button or type /protadin for options.", "The cooldown timeline is always shown for now. In the options you can show it only during combat.",
+	-- auto adaptation (1.0.4)
+	"Adapt automatically", "After a fight, once 25 new choices are in.", "priority %s.",
 }
 
 local T = {}
@@ -81,9 +81,6 @@ T.ruRU = {
 	["Forget"] = "Забыть",
 	["Use this order for the rotation."] = "Поставить этот порядок в ротацию.",
 	["Forget what was learned from your play."] = "Забыть то, что выучено по вашей игре.",
-	["Your play suggests a new priority: %s. Open /protadin to apply it."] = "По вашей игре подходит другой приоритет: %s. Откройте /protadin, чтобы применить.",
-	["Announce play style change"] = "Сообщать о смене стиля игры",
-	["At most once a day."] = "Не чаще раза в сутки.",
 	["%s has faded"] = "%s — баф закончился",
 	["%s is up, expected %s"] = "Активно %s, а нужно %s",
 	["Buff buttons will update after combat."] = "Кнопки бафов обновятся после боя.",
@@ -109,6 +106,9 @@ T.ruRU = {
 	["Show minimap button"] = "Показывать кнопку у миникарты",
 	["Protadin Assistant loaded. Right-click the minimap button or type /protadin for options."] = "Protadin Assistant загружен. Настройки: правый клик по кнопке у миникарты или /protadin.",
 	["The cooldown timeline is always shown for now. In the options you can show it only during combat."] = "Таймлайн кулдаунов сейчас виден всегда. В настройках можно включить «только в бою».",
+	["Adapt automatically"] = "Подстраиваться автоматически",
+	["After a fight, once 25 new choices are in."] = "После боя, когда наберётся 25 новых выборов.",
+	["priority %s."] = "приоритет: %s.",
 }
 
 T.deDE = {
@@ -154,9 +154,6 @@ T.deDE = {
 	["Forget"] = "Vergessen",
 	["Use this order for the rotation."] = "Diese Reihenfolge für die Rotation verwenden.",
 	["Forget what was learned from your play."] = "Vergessen, was aus deinem Spiel gelernt wurde.",
-	["Your play suggests a new priority: %s. Open /protadin to apply it."] = "Dein Spiel legt eine neue Priorität nahe: %s. Öffne /protadin, um sie zu übernehmen.",
-	["Announce play style change"] = "Änderung des Spielstils melden",
-	["At most once a day."] = "Höchstens einmal pro Tag.",
 	["%s has faded"] = "%s ist ausgelaufen",
 	["%s is up, expected %s"] = "%s ist aktiv, erwartet: %s",
 	["Buff buttons will update after combat."] = "Buff-Schaltflächen werden nach dem Kampf aktualisiert.",
@@ -182,6 +179,9 @@ T.deDE = {
 	["Show minimap button"] = "Minimap-Schaltfläche anzeigen",
 	["Protadin Assistant loaded. Right-click the minimap button or type /protadin for options."] = "Protadin Assistant geladen. Optionen: Rechtsklick auf die Minimap-Schaltfläche oder /protadin.",
 	["The cooldown timeline is always shown for now. In the options you can show it only during combat."] = "Die Abklingzeit-Zeitleiste wird vorerst immer angezeigt. In den Optionen kannst du sie nur im Kampf anzeigen.",
+	["Adapt automatically"] = "Automatisch anpassen",
+	["After a fight, once 25 new choices are in."] = "Nach einem Kampf, sobald 25 neue Entscheidungen vorliegen.",
+	["priority %s."] = "Priorität: %s.",
 }
 
 T.frFR = {
@@ -227,9 +227,6 @@ T.frFR = {
 	["Forget"] = "Oublier",
 	["Use this order for the rotation."] = "Utiliser cet ordre pour la rotation.",
 	["Forget what was learned from your play."] = "Oublier ce qui a été appris de votre jeu.",
-	["Your play suggests a new priority: %s. Open /protadin to apply it."] = "Votre jeu suggère une nouvelle priorité : %s. Ouvrez /protadin pour l'appliquer.",
-	["Announce play style change"] = "Annoncer un changement de style de jeu",
-	["At most once a day."] = "Au plus une fois par jour.",
 	["%s has faded"] = "%s a expiré",
 	["%s is up, expected %s"] = "%s est actif, attendu : %s",
 	["Buff buttons will update after combat."] = "Les boutons d'amélioration seront mis à jour après le combat.",
@@ -255,6 +252,9 @@ T.frFR = {
 	["Show minimap button"] = "Afficher le bouton de la minicarte",
 	["Protadin Assistant loaded. Right-click the minimap button or type /protadin for options."] = "Protadin Assistant chargé. Options : clic droit sur le bouton de la minicarte ou /protadin.",
 	["The cooldown timeline is always shown for now. In the options you can show it only during combat."] = "La chronologie des temps de recharge est affichée en permanence. Dans les options, vous pouvez l'afficher uniquement en combat.",
+	["Adapt automatically"] = "S'adapter automatiquement",
+	["After a fight, once 25 new choices are in."] = "Après un combat, dès 25 nouveaux choix.",
+	["priority %s."] = "priorité : %s.",
 }
 
 T.esES = {
@@ -300,9 +300,6 @@ T.esES = {
 	["Forget"] = "Olvidar",
 	["Use this order for the rotation."] = "Usar este orden para la rotación.",
 	["Forget what was learned from your play."] = "Olvidar lo aprendido de tu juego.",
-	["Your play suggests a new priority: %s. Open /protadin to apply it."] = "Tu forma de jugar sugiere una nueva prioridad: %s. Abre /protadin para aplicarla.",
-	["Announce play style change"] = "Avisar de cambios en el estilo de juego",
-	["At most once a day."] = "Como mucho una vez al día.",
 	["%s has faded"] = "%s ha expirado",
 	["%s is up, expected %s"] = "%s está activo, se esperaba %s",
 	["Buff buttons will update after combat."] = "Los botones de beneficios se actualizarán tras el combate.",
@@ -328,6 +325,9 @@ T.esES = {
 	["Show minimap button"] = "Mostrar botón del minimapa",
 	["Protadin Assistant loaded. Right-click the minimap button or type /protadin for options."] = "Protadin Assistant cargado. Opciones: clic derecho en el botón del minimapa o /protadin.",
 	["The cooldown timeline is always shown for now. In the options you can show it only during combat."] = "La línea de tiempo de reutilización se muestra siempre por ahora. En las opciones puedes mostrarla solo en combate.",
+	["Adapt automatically"] = "Adaptarse automáticamente",
+	["After a fight, once 25 new choices are in."] = "Tras un combate, cuando haya 25 elecciones nuevas.",
+	["priority %s."] = "prioridad: %s.",
 }
 T.esMX = T.esES
 
@@ -374,9 +374,6 @@ T.ptBR = {
 	["Forget"] = "Esquecer",
 	["Use this order for the rotation."] = "Usar esta ordem na rotação.",
 	["Forget what was learned from your play."] = "Esquecer o que foi aprendido com seu jogo.",
-	["Your play suggests a new priority: %s. Open /protadin to apply it."] = "Seu jogo sugere uma nova prioridade: %s. Abra /protadin para aplicá-la.",
-	["Announce play style change"] = "Avisar mudança no estilo de jogo",
-	["At most once a day."] = "No máximo uma vez por dia.",
 	["%s has faded"] = "%s expirou",
 	["%s is up, expected %s"] = "%s está ativo, esperado: %s",
 	["Buff buttons will update after combat."] = "Os botões de bônus serão atualizados após o combate.",
@@ -402,6 +399,9 @@ T.ptBR = {
 	["Show minimap button"] = "Mostrar botão do minimapa",
 	["Protadin Assistant loaded. Right-click the minimap button or type /protadin for options."] = "Protadin Assistant carregado. Opções: clique direito no botão do minimapa ou /protadin.",
 	["The cooldown timeline is always shown for now. In the options you can show it only during combat."] = "A linha do tempo de recargas é sempre exibida por enquanto. Nas opções você pode mostrá-la apenas em combate.",
+	["Adapt automatically"] = "Adaptar automaticamente",
+	["After a fight, once 25 new choices are in."] = "Depois de um combate, quando houver 25 novas escolhas.",
+	["priority %s."] = "prioridade: %s.",
 }
 
 T.itIT = {
@@ -447,9 +447,6 @@ T.itIT = {
 	["Forget"] = "Dimentica",
 	["Use this order for the rotation."] = "Usa questo ordine per la rotazione.",
 	["Forget what was learned from your play."] = "Dimentica ciò che è stato appreso dal tuo gioco.",
-	["Your play suggests a new priority: %s. Open /protadin to apply it."] = "Il tuo gioco suggerisce una nuova priorità: %s. Apri /protadin per applicarla.",
-	["Announce play style change"] = "Annuncia il cambio di stile di gioco",
-	["At most once a day."] = "Al massimo una volta al giorno.",
 	["%s has faded"] = "%s è terminato",
 	["%s is up, expected %s"] = "%s è attivo, previsto: %s",
 	["Buff buttons will update after combat."] = "I pulsanti dei benefici si aggiorneranno dopo il combattimento.",
@@ -475,6 +472,9 @@ T.itIT = {
 	["Show minimap button"] = "Mostra il pulsante della minimappa",
 	["Protadin Assistant loaded. Right-click the minimap button or type /protadin for options."] = "Protadin Assistant caricato. Opzioni: clic destro sul pulsante della minimappa o /protadin.",
 	["The cooldown timeline is always shown for now. In the options you can show it only during combat."] = "La linea temporale dei tempi di recupero è sempre visibile per ora. Nelle opzioni puoi mostrarla solo in combattimento.",
+	["Adapt automatically"] = "Adatta automaticamente",
+	["After a fight, once 25 new choices are in."] = "Dopo un combattimento, quando ci sono 25 nuove scelte.",
+	["priority %s."] = "priorità: %s.",
 }
 
 T.koKR = {
@@ -520,9 +520,6 @@ T.koKR = {
 	["Forget"] = "초기화",
 	["Use this order for the rotation."] = "이 순서를 로테이션에 사용합니다.",
 	["Forget what was learned from your play."] = "플레이에서 학습한 내용을 지웁니다.",
-	["Your play suggests a new priority: %s. Open /protadin to apply it."] = "플레이 기준으로 새 우선순위를 추천합니다: %s. /protadin 에서 적용하세요.",
-	["Announce play style change"] = "플레이 스타일 변화 알림",
-	["At most once a day."] = "하루에 최대 한 번.",
 	["%s has faded"] = "%s 효과가 사라졌습니다",
 	["%s is up, expected %s"] = "%s 효과가 활성화됨, 예상: %s",
 	["Buff buttons will update after combat."] = "강화 효과 버튼은 전투 후에 갱신됩니다.",
@@ -548,6 +545,9 @@ T.koKR = {
 	["Show minimap button"] = "미니맵 버튼 표시",
 	["Protadin Assistant loaded. Right-click the minimap button or type /protadin for options."] = "Protadin Assistant 로드됨. 설정: 미니맵 버튼 오른쪽 클릭 또는 /protadin.",
 	["The cooldown timeline is always shown for now. In the options you can show it only during combat."] = "재사용 대기시간 타임라인은 지금 항상 표시됩니다. 설정에서 전투 중에만 표시할 수 있습니다.",
+	["Adapt automatically"] = "자동으로 조정",
+	["After a fight, once 25 new choices are in."] = "전투 후, 새 선택이 25번 쌓이면.",
+	["priority %s."] = "우선순위: %s.",
 }
 
 T.zhCN = {
@@ -593,9 +593,6 @@ T.zhCN = {
 	["Forget"] = "清除",
 	["Use this order for the rotation."] = "将此顺序用于循环。",
 	["Forget what was learned from your play."] = "清除从你的操作中学到的内容。",
-	["Your play suggests a new priority: %s. Open /protadin to apply it."] = "根据你的操作，建议新的优先级：%s。打开 /protadin 应用。",
-	["Announce play style change"] = "提示操作风格变化",
-	["At most once a day."] = "每天最多一次。",
 	["%s has faded"] = "%s 已消失",
 	["%s is up, expected %s"] = "当前为 %s，应为 %s",
 	["Buff buttons will update after combat."] = "增益按钮将在战斗结束后更新。",
@@ -621,6 +618,9 @@ T.zhCN = {
 	["Show minimap button"] = "显示小地图按钮",
 	["Protadin Assistant loaded. Right-click the minimap button or type /protadin for options."] = "Protadin Assistant 已加载。设置：右键点击小地图按钮或输入 /protadin。",
 	["The cooldown timeline is always shown for now. In the options you can show it only during combat."] = "冷却时间轴目前始终显示。可在设置中改为仅在战斗中显示。",
+	["Adapt automatically"] = "自动调整",
+	["After a fight, once 25 new choices are in."] = "战斗结束后，新增 25 次选择时。",
+	["priority %s."] = "优先级：%s。",
 }
 
 T.zhTW = {
@@ -666,9 +666,6 @@ T.zhTW = {
 	["Forget"] = "清除",
 	["Use this order for the rotation."] = "將此順序用於循環。",
 	["Forget what was learned from your play."] = "清除從你的操作中學到的內容。",
-	["Your play suggests a new priority: %s. Open /protadin to apply it."] = "根據你的操作，建議新的優先順序：%s。打開 /protadin 套用。",
-	["Announce play style change"] = "提示操作風格變化",
-	["At most once a day."] = "每天最多一次。",
 	["%s has faded"] = "%s 已消失",
 	["%s is up, expected %s"] = "目前為 %s，應為 %s",
 	["Buff buttons will update after combat."] = "增益按鈕將在戰鬥結束後更新。",
@@ -694,6 +691,9 @@ T.zhTW = {
 	["Show minimap button"] = "顯示小地圖按鈕",
 	["Protadin Assistant loaded. Right-click the minimap button or type /protadin for options."] = "Protadin Assistant 已載入。設定：右鍵點擊小地圖按鈕或輸入 /protadin。",
 	["The cooldown timeline is always shown for now. In the options you can show it only during combat."] = "冷卻時間軸目前始終顯示。可在設定中改為僅在戰鬥中顯示。",
+	["Adapt automatically"] = "自動調整",
+	["After a fight, once 25 new choices are in."] = "戰鬥結束後，新增 25 次選擇時。",
+	["priority %s."] = "優先順序：%s。",
 }
 
 local strings = T[GetLocale()]

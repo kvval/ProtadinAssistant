@@ -348,12 +348,12 @@ function O:Build()
 	forget:SetScript("OnClick", function() T:ForgetLearned(); O:Refresh() end)
 	AddTooltip(forget, L["Forget what was learned from your play."])
 
-	local announce = add(Checkbox(p, L["Announce play style change"],
-		function() return tdb.announceStyle end,
-		function(v) tdb.announceStyle = v end,
-		L["At most once a day."]))
-	announce:SetPoint("TOPLEFT", apply, "BOTTOMLEFT", -2, -6)
-	self.learnAnnounce = announce
+	local auto = add(Checkbox(p, L["Adapt automatically"],
+		function() return tdb.autoAdapt end,
+		function(v) tdb.autoAdapt = v end,
+		L["After a fight, once 25 new choices are in."]))
+	auto:SetPoint("TOPLEFT", apply, "BOTTOMLEFT", -2, -6)
+	self.learnAuto = auto
 	self.boxes = { gBox, bBox, tBox }
 end
 
@@ -447,7 +447,7 @@ function O:Refresh()
 	end
 	apply:ClearAllPoints()
 	apply:SetPoint("TOPLEFT", lt, "BOTTOMLEFT", -2, -6)
-	self.tlBox:Close(self.learnAnnounce, 8)
+	self.tlBox:Close(self.learnAuto, 8)
 
 	self:Layout()
 	-- positions may only settle on the next frame after the panel is shown

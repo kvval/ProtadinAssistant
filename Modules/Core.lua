@@ -29,7 +29,7 @@ ns.defaults = {
 		priority = {},         -- spell names, most important first
 		-- "from your play": wins[A][B] = times A was cast while B was also ready
 		learn = { wins = {}, choices = 0 },
-		announceStyle = true,  -- chat notice when the learned order changes notably
+		autoAdapt = true,      -- apply the learned priority by itself after fights
 		spells = {}, -- [spellName] = true/false; missing entry -> ns.defaultTimelineSpells
 		learnedSeals = {}, -- seal names discovered at runtime (any locale)
 	},

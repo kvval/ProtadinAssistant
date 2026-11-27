@@ -403,7 +403,7 @@ function T:OnEvent(event, ...)
 		self.inCombat = false
 		self:UpdateVisibility()
 		self:ScanSeal()
-		self:CheckLearnNotice()
+		self:AutoAdapt()
 	elseif event == "SPELLS_CHANGED" then
 		self:BuildCandidates(); self:RebuildEntries()
 	elseif event == "UNIT_AURA" then
@@ -588,41 +588,41 @@ function T:LearnedOrder()
 	return order, learn.choices or 0
 end
 
--- how different is the learned order from the current one?
--- "notable" = a different #1, or at least 2 pairs in reverse order
-function T:IsNotablyDifferent(order)
-	local cur = {}
-	for i, s in ipairs(self:EnabledByPriority()) do cur[i] = s.name end
-	if #order < 2 or #cur < 2 then return false end
-	if order[1] ~= cur[1] then return true end
-	local pos = {}
-	for i, n in ipairs(cur) do pos[n] = i end
-	local inversions = 0
-	for i = 1, #order do
-		for j = i + 1, #order do
-			local a, b = pos[order[i]], pos[order[j]]
-			if a and b and a > b then inversions = inversions + 1 end
+-- the shortest list of swaps that turns `cur` into `new` ("A <-> B")
+local function Swaps(cur, new)
+	local a, pos, out = {}, {}, {}
+	for i, n in ipairs(cur) do a[i], pos[n] = n, i end
+	for i = 1, #new do
+		if a[i] ~= new[i] and pos[new[i]] then
+			local j = pos[new[i]]
+			out[#out + 1] = new[i] .. " <-> " .. a[i]
+			a[i], a[j] = a[j], a[i]
+			pos[a[i]], pos[a[j]] = i, j
 		end
 	end
-	return inversions >= 2
+	return out
 end
+T.Swaps = Swaps
 
-local NOTICE_INTERVAL = 24 * 60 * 60 -- at most once a day
+local AUTO_EVERY = 25 -- new choices between automatic adjustments
 
--- after a fight: tell the player in chat when their play suggests a notably
--- different order (once a day at most, and never twice for the same order)
-function T:CheckLearnNotice()
-	if not self.db.announceStyle then return end
+-- after a fight: if enough new choices came in and the learned order differs,
+-- apply it and say in one chat line what moved
+function T:AutoAdapt()
+	if not self.db.autoAdapt then return end
 	local learn = self.db.learn
-	local order, n = self:LearnedOrder()
-	if n < self.LEARN_MIN or not self:IsNotablyDifferent(order) then return end
-	local key = table.concat(order, ">")
-	if key == learn.lastNoticeOrder then return end
-	local now = time()
-	if learn.lastNoticeAt and now - learn.lastNoticeAt < NOTICE_INTERVAL then return end
-	learn.lastNoticeAt, learn.lastNoticeOrder = now, key
-	ns.Print(L["Your play suggests a new priority: %s. Open /protadin to apply it."]:format(
-		"|cffffd200" .. self:FormatOrder(order) .. "|r"))
+	local n = learn.choices or 0
+	if n < self.LEARN_MIN then return end
+	if n - (learn.lastAutoChoices or 0) < AUTO_EVERY then return end
+	learn.lastAutoChoices = n
+	local order = self:LearnedOrder()
+	local cur = {}
+	for i, s in ipairs(self:EnabledByPriority()) do cur[i] = s.name end
+	local swaps = Swaps(cur, order)
+	if #swaps == 0 then return end
+	self:ApplyLearned()
+	ns.Print(L["priority %s."]:format("|cffffd200" .. table.concat(swaps, ", ") .. "|r"))
+	if ns.RefreshOptions then ns.RefreshOptions() end
 end
 
 function T:ApplyLearned()
@@ -655,9 +655,7 @@ function T:ApplyLearnedFromUI()
 end
 
 function T:ForgetLearned()
-	local old = self.db.learn
-	-- keep the notice clock so "forget" can't be used to get spammed
-	self.db.learn = { wins = {}, choices = 0, lastNoticeAt = old and old.lastNoticeAt }
+	self.db.learn = { wins = {}, choices = 0 }
 end
 
 ---------------------------------------------------------------------------
