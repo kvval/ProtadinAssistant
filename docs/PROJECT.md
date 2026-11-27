@@ -1,7 +1,7 @@
 # Protadin Assistant - project notes
 
 Addon for Protection Paladins in **World of Warcraft: Forever**. Author on CurseForge: Lori Quaid. License: MIT.
-Current version: **1.0.6**, published on CurseForge and GitHub Releases on 2026-11-27 (all releases since 1.0.3 go through GitHub Actions).
+Current version: **1.0.7**, published on CurseForge and GitHub Releases on 2026-11-28 (all releases since 1.0.3 go through GitHub Actions).
 
 Links: [CurseForge](https://www.curseforge.com/wow/addons/protadin-assistant) (project 1826638) · [GitHub](https://github.com/kvval/ProtadinAssistant)
 
@@ -103,6 +103,8 @@ In memory the addon uses spell names (client language). On disk (`ProtadinAssist
 - **1.0.5:** option renamed "Chat message when a buff fades"; changelog made cumulative.
 - **1.0.6:** pre-pull check, buff row hides when dead / taxi / vehicle, `/protadin help`, `/protadin forget`, copyable debug window (auras merged into debug, minimap Ctrl+LMB removed), Camp Benefits ID learned, first auto-adapt per login links to the options, saved data keyed by spell ID.
 
+- **1.0.7:** much less garbage (the timeline asked the client about every cooldown, mana cost and range on every frame: ~60 KB/s out of combat, now ~0; in combat ~7 KB/s). Cooldowns are asked only on events, mana cost and range cached, UNIT_AURA updates filtered to our auras, no cooldown queries in combat after the first secret answer. Cooldown durations from the spell tooltip (SPELL_RECAST_TIME_* patterns; talents and gear counted in), talent change wipes learned durations. Camp Benefits ID 1229741 built in. `/protadin mem` (not in help): memory growth over 10 s with garbage per function.
+
 ## Releasing (GitHub + CurseForge)
 
 Repository: https://github.com/kvval/ProtadinAssistant. The repository root is the addon; `tools/`, notes and texts are left out of the zip by `.pkgmeta`, `dist/` is not in git at all.
@@ -126,7 +128,7 @@ GitHub repo settings worth having (author does them in the browser): About with 
 - [x] Dungeon run without Lua errors (author, 2026-11-27).
 - [x] In-game clicks: minimap button, food, campfire kit look fine (author, 2026-11-27).
 - [x] Camp Benefits spell ID 1229741 hardcoded in `Data.lua` (seen in game 2026-11-28).
-- [x] `release.yml` runs `tools/run_all.sh` before the packager (2026-11-27). First real run happens with the next tag - if it fails on the GitHub runner, nothing is published and the log shows why.
+- [x] `release.yml` runs `tools/run_all.sh` before the packager; first real run with v1.0.7 passed. Step results: `curl https://api.github.com/repos/kvval/ProtadinAssistant/actions/runs/<id>/jobs`.
 - [ ] Optional: update `actions/checkout` to a Node 24 version when the deprecation warning starts to matter.
 - Ideas, not planned: the same addon for other classes (warrior tank and shaman fit best). Rejected ideas: GCD sweep on the hint, "expiring soon" colours, error-catch wrapper, minimap learning-status line, undo button.
 
