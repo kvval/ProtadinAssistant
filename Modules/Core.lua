@@ -101,26 +101,50 @@ function ns.IsUsable(spellID)
 	return ns.HasManaFor(spellID)
 end
 
--- do we have the mana for it right now? (unknown / secret -> yes)
+-- mana cost of a spell, asked once per spell (the answer is a new table every
+-- time); false = no mana cost / unknown. Cleared when the spellbook changes.
 local MANA = (Enum and Enum.PowerType and Enum.PowerType.Mana) or 0
-function ns.HasManaFor(spellID)
+local manaCost = {}
+local hasRange = {}
+function ns.ClearSpellCache() wipe(manaCost); wipe(hasRange) end
+
+local function ManaCost(spellID)
+	local c = manaCost[spellID]
+	if c ~= nil then return c end
+	c = false
 	local getCost = (C_Spell and C_Spell.GetSpellPowerCost) or GetSpellPowerCost
-	if not getCost then return true end
-	local ok, costs = pcall(getCost, spellID)
-	if not ok or type(costs) ~= "table" then return true end
-	for _, c in ipairs(costs) do
-		local ptype, cost = c.type, c.cost
-		if ptype ~= nil and cost ~= nil and not ns.IsSecret(ptype) and not ns.IsSecret(cost)
-			and ptype == MANA and cost > 0 then
-			local okP, power = pcall(UnitPower, "player", MANA)
-			if okP and power ~= nil and not ns.IsSecret(power) and power < cost then return false end
+	local ok, costs = false, nil
+	if getCost then ok, costs = pcall(getCost, spellID) end
+	if ok and type(costs) == "table" then
+		for _, x in ipairs(costs) do
+			local ptype, cost = x.type, x.cost
+			if ptype ~= nil and cost ~= nil and not ns.IsSecret(ptype) and not ns.IsSecret(cost)
+				and ptype == MANA and cost > 0 then
+				c = cost
+			end
 		end
+		manaCost[spellID] = c -- secret / failed answers are asked again next time
 	end
+	return c
+end
+
+-- do we have the mana for it right now? (unknown / secret -> yes)
+function ns.HasManaFor(spellID)
+	local cost = ManaCost(spellID)
+	if not cost then return true end
+	local okP, power = pcall(UnitPower, "player", MANA)
+	if okP and power ~= nil and not ns.IsSecret(power) and power < cost then return false end
 	return true
 end
 
 -- does the spell have a range at all (needs a target)? Consecration / Holy Shield don't.
 function ns.HasRange(spellID)
+	local r = hasRange[spellID]
+	if r == nil then r = ns.HasRangeRaw(spellID); hasRange[spellID] = r end
+	return r
+end
+
+function ns.HasRangeRaw(spellID)
 	if C_Spell and C_Spell.SpellHasRange then
 		local ok, r = pcall(C_Spell.SpellHasRange, spellID)
 		if ok and r ~= nil and not ns.IsSecret(r) then return r and true or false end
@@ -698,6 +722,27 @@ function ns.CaptureToWindow(fn)
 end
 
 ---------------------------------------------------------------------------
+-- /protadin mem: how fast the addon makes garbage (for checking performance)
+---------------------------------------------------------------------------
+local GetMem = (C_AddOns and C_AddOns.GetAddOnMemoryUsage) or GetAddOnMemoryUsage
+function ns.MemoryKB()
+	if not (UpdateAddOnMemoryUsage and GetMem) then return nil end
+	UpdateAddOnMemoryUsage()
+	return GetMem(ADDON)
+end
+
+function ns.MeasureMemory()
+	local a = ns.MemoryKB()
+	if not a then ns.Print("memory: n/a") return end
+	ns.Print(("memory: %.0f KB, measuring for 10 s..."):format(a))
+	C_Timer.After(10, function()
+		local b = ns.MemoryKB()
+		if b < a then ns.Print("memory: a garbage collection ran, try again") return end
+		ns.Print(("memory: %.0f KB, +%.1f KB/s"):format(b, (b - a) / 10))
+	end)
+end
+
+---------------------------------------------------------------------------
 -- /protadin help
 ---------------------------------------------------------------------------
 local HELP = {
@@ -739,10 +784,13 @@ SlashCmdList.PROTADIN = function(msg)
 		ns.timeline:ForgetLearned()
 		ns.Print(L["Learned priority cleared."])
 		if ns.RefreshOptions then ns.RefreshOptions() end
+	elseif cmd == "mem" then
+		ns.MeasureMemory()
 	elseif cmd == "debug" or cmd == "auras" then -- "auras" is the old name, kept working
 		ns.CaptureToWindow(function()
 			ns.Print("Protadin Assistant " .. tostring(ns.version or "?") .. ", client " .. tostring((GetBuildInfo and select(1, GetBuildInfo())) or "?"))
 			for _, m in ipairs(ns.modules) do if m.Debug then m:Debug() end end
+			ns.Print(("memory: %.0f KB"):format(ns.MemoryKB() or -1))
 			-- every buff on the player with its spell ID
 			ns.Print(L["buffs on you:"])
 			local readable = ns.ForEachPlayerAura(function(a)

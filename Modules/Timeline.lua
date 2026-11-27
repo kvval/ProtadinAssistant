@@ -389,6 +389,8 @@ function T:Enable()
 	f:RegisterEvent("PLAYER_REGEN_DISABLED")
 	f:RegisterEvent("PLAYER_REGEN_ENABLED")
 	f:RegisterEvent("SPELLS_CHANGED")
+	f:RegisterEvent("SPELL_UPDATE_COOLDOWN")
+	f:RegisterEvent("PLAYER_TARGET_CHANGED")
 	f:RegisterUnitEvent("UNIT_AURA", "player")
 	f:RegisterUnitEvent("UNIT_SPELLCAST_SUCCEEDED", "player")
 	f:SetScript("OnEvent", function(_, event, ...) T:OnEvent(event, ...) end)
@@ -456,7 +458,10 @@ function T:UpdateVisibility()
 end
 
 function T:OnEvent(event, ...)
-	self.queryTick = (self.queryTick or 0) + 1 -- something changed: ask the client again
+	-- something changed: ask the client again on the next frame
+	self.queryTick = (self.queryTick or 0) + 1
+	self.usableTick = (self.usableTick or 0) + 1
+	if event == "SPELL_UPDATE_COOLDOWN" then return end
 	if event == "PLAYER_REGEN_DISABLED" then
 		self.inCombat = true
 		self.castsSecret = nil
@@ -467,6 +472,7 @@ function T:OnEvent(event, ...)
 		self:ScanSeal()
 		self:AutoAdapt()
 	elseif event == "SPELLS_CHANGED" then
+		ns.ClearSpellCache()
 		self:BuildCandidates(); self:RebuildEntries()
 	elseif event == "UNIT_AURA" then
 		local _, info = ...
@@ -815,11 +821,14 @@ end
 -- returns: remaining seconds (number; for the seal: time left on it, 0 when no
 -- seal is up = "ready"), or nil + false + durationObject when only fallback B
 -- can show it
--- The client is asked about cooldowns QUERY_EVERY seconds (and right after any
--- event), not every frame: each answer is a new table, so asking every frame
--- made megabytes of garbage a minute. Between queries the remaining time is
--- worked out from the stored end time.
-local QUERY_EVERY = 0.1
+-- The client is asked about cooldowns only when something changed (any event
+-- of ours, SPELL_UPDATE_COOLDOWN included) and once a second as a safety net -
+-- never every frame: each answer is a new table, so asking every frame made
+-- megabytes of garbage a minute. Between queries the remaining time is worked
+-- out from the stored end time. Usable / in range (plain true/false answers,
+-- no garbage) are asked USABLE_EVERY seconds.
+local QUERY_EVERY = 1
+local USABLE_EVERY = 0.1
 
 function T:Remaining(e, now)
 	if e.isSeal then
@@ -912,6 +921,18 @@ function T:Update()
 		self.lastQuery = now
 		self.queryTick = (self.queryTick or 0) + 1
 	end
+	if now - (self.lastUsable or 0) >= USABLE_EVERY then
+		self.lastUsable = now
+		self.usableTick = (self.usableTick or 0) + 1
+	end
+	-- hidden: nothing to draw; only look again when the client may have new
+	-- answers (keeps learned cooldown durations up to date)
+	if not shown then
+		if self.hiddenTick == self.queryTick then return end
+		self.hiddenTick = self.queryTick
+	else
+		self.hiddenTick = nil
+	end
 	wipe(moving)
 	wipe(justReady)
 	local nextEntry
@@ -952,8 +973,8 @@ function T:Update()
 			-- (the seal: whenever no seal is up)
 			if not nextEntry then
 				-- asked once per query tick, like cooldowns
-				if e.uTick ~= (self.queryTick or 0) then
-					e.uTick = self.queryTick or 0
+				if e.uTick ~= self.usableTick then
+					e.uTick = self.usableTick
 					if e.isSeal then e.uOk = not e.id or ns.IsUsable(e.id)
 					else e.uOk = ns.IsUsable(e.id) and ns.InRange(e.id) end
 				end
