@@ -5,6 +5,7 @@ ns.N = { defaultPriority = {} }
 ns.defaultTimelineSpells = { ["Judgement"]=true, ["Holy Strike"]=true, ["Consecration"]=true, ["Holy Shield"]=true }
 local printed = {}
 ns.Print = function(msg) printed[#printed+1] = msg end
+ns.SpellLink = function(spell) return "[" .. tostring(spell) .. "]" end
 assert(loadfile(arg[1] .. "/Modules/Timeline.lua"))("x", ns)
 local T = ns.timeline
 T.RebuildEntries = function() end
