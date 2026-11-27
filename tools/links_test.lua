@@ -123,4 +123,6 @@ print("camp line:", ns.L["%s has faded"]:format(B:WantLink("camp")))
 O = nil; for _, m in ipairs(ns.modules) do if m.Build and m.Refresh and m.Layout then O = m end end
 O:Refresh()
 print("options seal line:", O.sealText.text or "(set)")
+T.db.learn.seals = { ["Seal of Righteousness"] = 50 }
+print("swap line, known popular seal:", ns.L["priority %s."]:format(table.concat(T.Swaps({ "Judgement", "__seal" }, { "__seal", "Judgement" }), ", ")))
 print("LINKS TEST DONE")
