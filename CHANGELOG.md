@@ -1,7 +1,7 @@
 # Protadin Assistant 1.0.6
 
-- **Pre-pull check.** On a ready check or when you enter a dungeon, one chat line tells what's missing: Aura, Blessing, Righteous Fury or Food. Nothing missing - nothing said.
-- **No blinking when nothing can be fixed.** The buff row hides while you're dead, on a flight path or in a vehicle.
+- **Pre-pull check.** On a ready check or when you enter a dungeon, one chat line lists what's missing: Aura, Blessing, Righteous Fury or Food.
+- **Buff row steps aside.** It hides while you're dead, on a flight path or in a vehicle.
 - **New commands.** `/protadin help` lists all commands. `/protadin forget` clears the learned priority.
 - **Copyable debug.** `/protadin debug` opens a window you can copy from, with all buffs on you included.
 - **Camp Benefits works in any client language.** The addon remembers its spell ID once it sees the buff.
