@@ -4,8 +4,6 @@
 Self-learning ability timeline and buff watcher for Protection Paladins.
 Works out of the box. No other addons needed.
 
-Bugs and ideas: [GitHub issues](https://github.com/kvval/ProtadinAssistant/issues) or the comments here.
-
 ## Ability timeline
 
 - Your rotation and seal, 10 seconds ahead, with countdowns.
@@ -36,7 +34,7 @@ The client hides cooldowns from addons in combat. The addon learns them out of c
 ## Troubleshooting
 
 - Frames gone - `/protadin reset`.
-- Wrong suggestion - post `/protadin debug` output in an issue.
+- Wrong suggestion - post `/protadin debug` output in the comments.
 - Learned priority went wrong - Options → Forget.
 
 ## Languages
