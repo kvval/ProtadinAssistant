@@ -1,3 +1,8 @@
+# Protadin Assistant 1.0.5
+
+- The option is now called "Chat message when a buff fades", same wording as the chat messages.
+- The changelog now keeps all previous versions.
+
 # Protadin Assistant 1.0.4
 
 - **Priority adapts by itself.** After a fight, once 25 new choices are in, the addon applies the order it learned from your play and tells in one chat line what changed, like "priority [Seal of Fury] <-> [Judgement]". You can turn it off ("Adapt automatically"). The old once-a-day message is gone.
