@@ -34,7 +34,7 @@ local KEYS = {
 	-- auto adaptation (1.0.4)
 	"Adapt automatically", "After a fight, once 25 new choices are in.", "priority %s.",
 	-- seal as a rotation entry (1.0.4)
-	"Seal (any)",
+	"Seal",
 }
 
 local T = {}
@@ -108,7 +108,7 @@ T.ruRU = {
 	["Adapt automatically"] = "Подстраиваться автоматически",
 	["After a fight, once 25 new choices are in."] = "После боя, когда наберётся 25 новых выборов.",
 	["priority %s."] = "приоритет: %s.",
-	["Seal (any)"] = "Печать (любая)",
+	["Seal"] = "Печать",
 }
 
 T.deDE = {
@@ -180,7 +180,7 @@ T.deDE = {
 	["Adapt automatically"] = "Automatisch anpassen",
 	["After a fight, once 25 new choices are in."] = "Nach einem Kampf, sobald 25 neue Entscheidungen vorliegen.",
 	["priority %s."] = "Priorität: %s.",
-	["Seal (any)"] = "Siegel (beliebig)",
+	["Seal"] = "Siegel",
 }
 
 T.frFR = {
@@ -252,7 +252,7 @@ T.frFR = {
 	["Adapt automatically"] = "S'adapter automatiquement",
 	["After a fight, once 25 new choices are in."] = "Après un combat, dès 25 nouveaux choix.",
 	["priority %s."] = "priorité : %s.",
-	["Seal (any)"] = "Sceau (n'importe lequel)",
+	["Seal"] = "Sceau",
 }
 
 T.esES = {
@@ -324,7 +324,7 @@ T.esES = {
 	["Adapt automatically"] = "Adaptarse automáticamente",
 	["After a fight, once 25 new choices are in."] = "Tras un combate, cuando haya 25 elecciones nuevas.",
 	["priority %s."] = "prioridad: %s.",
-	["Seal (any)"] = "Sello (cualquiera)",
+	["Seal"] = "Sello",
 }
 T.esMX = T.esES
 
@@ -397,7 +397,7 @@ T.ptBR = {
 	["Adapt automatically"] = "Adaptar automaticamente",
 	["After a fight, once 25 new choices are in."] = "Depois de um combate, quando houver 25 novas escolhas.",
 	["priority %s."] = "prioridade: %s.",
-	["Seal (any)"] = "Selo (qualquer)",
+	["Seal"] = "Selo",
 }
 
 T.itIT = {
@@ -469,7 +469,7 @@ T.itIT = {
 	["Adapt automatically"] = "Adatta automaticamente",
 	["After a fight, once 25 new choices are in."] = "Dopo un combattimento, quando ci sono 25 nuove scelte.",
 	["priority %s."] = "priorità: %s.",
-	["Seal (any)"] = "Sigillo (qualsiasi)",
+	["Seal"] = "Sigillo",
 }
 
 T.koKR = {
@@ -541,7 +541,7 @@ T.koKR = {
 	["Adapt automatically"] = "자동으로 조정",
 	["After a fight, once 25 new choices are in."] = "전투 후, 새 선택이 25번 쌓이면.",
 	["priority %s."] = "우선순위: %s.",
-	["Seal (any)"] = "문장 (아무거나)",
+	["Seal"] = "문장",
 }
 
 T.zhCN = {
@@ -613,7 +613,7 @@ T.zhCN = {
 	["Adapt automatically"] = "自动调整",
 	["After a fight, once 25 new choices are in."] = "战斗结束后，新增 25 次选择时。",
 	["priority %s."] = "优先级：%s。",
-	["Seal (any)"] = "圣印（任意）",
+	["Seal"] = "圣印",
 }
 
 T.zhTW = {
@@ -685,7 +685,7 @@ T.zhTW = {
 	["Adapt automatically"] = "自動調整",
 	["After a fight, once 25 new choices are in."] = "戰鬥結束後，新增 25 次選擇時。",
 	["priority %s."] = "優先順序：%s。",
-	["Seal (any)"] = "聖印（任意）",
+	["Seal"] = "聖印",
 }
 
 local strings = T[GetLocale()]

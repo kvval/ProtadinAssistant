@@ -51,7 +51,7 @@ end
 
 -- what the player sees for an entry name (the seal has an internal key)
 function T:DisplayName(name)
-	if name == SEAL_KEY then return L["Seal (any)"] end
+	if name == SEAL_KEY then return L["Seal"] end
 	return name
 end
 

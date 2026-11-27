@@ -43,7 +43,7 @@ Test character: Lori-Quaid (Protection paladin, English client).
 - Well Fed / Well-Rested are switched on or off at every login by what's in the bags, unless the player switched them by hand. Camp Benefits is always shown.
 - Default place: right side, under the minimap.
 
-**Cooldown timeline:** a 10 s track, countdowns, ready spells pop and hide, overlapping icons turn translucent. The **seal** is an entry of the rotation list ("Seal (any)", internal key `__seal`, first by default): while a seal is up it travels the track with its time left; with no seal up it counts as "ready" and takes part in Suggest next and learning like any spell. (Until 1.0.3 it was a separate checkbox with a blinking icon at "now".) New installs see it always; "Only during combat" is an option (the welcome message points to it).
+**Cooldown timeline:** a 10 s track, countdowns, ready spells pop and hide, overlapping icons turn translucent. The **seal** is an entry of the rotation list ("Seal", internal key `__seal`, first by default): while a seal is up it travels the track with its time left; with no seal up it counts as "ready" and takes part in Suggest next and learning like any spell. (Until 1.0.3 it was a separate checkbox with a blinking icon at "now".) New installs see it always; "Only during combat" is an option (the welcome message points to it).
 - **Suggest next:** gold icon, 20% bigger, pulsing glow = first ready, usable, in-range spell by priority.
 - **Highlight upcoming:** spells ready within 1.5 s grow smoothly to the "Suggest next" size, the border fades to gold.
 - **Rotation, by prio:** one list of numbered drop-downs (position = priority; "- none -" removes a spell; "+ add a spell" adds one).
