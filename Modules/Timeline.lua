@@ -293,8 +293,9 @@ function T:Enable()
 	local nx = CreateFrame("Frame", nil, bar)
 	nx:SetFrameLevel(bar:GetFrameLevel() + 7)
 	nx.border = nx:CreateTexture(nil, "BACKGROUND")
-	nx.border:SetPoint("TOPLEFT", -3, 3)
-	nx.border:SetPoint("BOTTOMRIGHT", 3, -3)
+	-- same border width as the timeline icons, so the hand-over doesn't jump
+	nx.border:SetPoint("TOPLEFT", -2, 2)
+	nx.border:SetPoint("BOTTOMRIGHT", 2, -2)
 	nx.border:SetColorTexture(1, 0.82, 0, 1)
 	nx.tex = nx:CreateTexture(nil, "ARTWORK")
 	nx.tex:SetAllPoints()
@@ -303,8 +304,16 @@ function T:Enable()
 	local fi = fa:CreateAnimation("Alpha")
 	fi:SetFromAlpha(0); fi:SetToAlpha(1); fi:SetDuration(0.15)
 	nx.fadeIn = fa
-	-- pulsing gold glow around it, like a proc highlight on the action bars
-	nx.glow = nx:CreateTexture(nil, "OVERLAY")
+	-- pulsing gold glow around it, like a proc highlight on the action bars.
+	-- It sits on its own frame so it can fade in separately from the pulse.
+	local gf = CreateFrame("Frame", nil, nx)
+	gf:SetAllPoints()
+	gf:SetFrameLevel(nx:GetFrameLevel() + 1)
+	local gfa = gf:CreateAnimationGroup()
+	local gfi = gfa:CreateAnimation("Alpha")
+	gfi:SetFromAlpha(0); gfi:SetToAlpha(1); gfi:SetDuration(0.25)
+	nx.glowIn = gfa
+	nx.glow = gf:CreateTexture(nil, "OVERLAY")
 	nx.glow:SetTexture("Interface\\Buttons\\UI-ActionButton-Border")
 	nx.glow:SetBlendMode("ADD")
 	nx.glow:SetVertexColor(1, 0.82, 0.2)
@@ -782,6 +791,7 @@ function T:Update()
 	local SOON = 1.5 -- one global cooldown
 	wipe(moving)
 	local nextEntry, sealMissing
+	local justReady = {}
 
 	for i, e in ipairs(self.entries) do
 		local ic = self.icons[i]
@@ -822,8 +832,10 @@ function T:Update()
 			ic.text:SetText("")
 			ic:Show()
 		elseif rem <= 0 then
-			-- ready: hidden (visible on the action bars anyway), with a pop if it just came off cooldown
-			if ic.wasMoving and not e.isSeal then self:Pop(ic) end
+			-- ready: hidden (visible on the action bars anyway). If it just came off
+			-- cooldown it either turns into "press this" or pops (decided below).
+			if ic.wasMoving and not e.isSeal then justReady[#justReady + 1] = ic end
+			ic.wasMoving = false
 			ic:Hide()
 			-- entries are in priority order: the first usable ready one is "press this"
 			if not e.isSeal and not nextEntry and ns.IsUsable(e.id) and ns.InRange(e.id) then nextEntry = e end
@@ -837,11 +849,21 @@ function T:Update()
 
 	-- "press this" (a missing seal already blinks at "now" and wins)
 	local nx = self.nextIcon
-	if shown and db.showNext and nextEntry and not sealMissing then
+	local showNx = shown and db.showNext and nextEntry and not sealMissing
+	-- a spell that just arrived at "now" and becomes "press this" hands over
+	-- without a pop: same place, same size, so it reads as one icon
+	local handover = false
+	for _, ic in ipairs(justReady) do
+		if showNx and ic.entry == nextEntry then handover = true
+		else self:Pop(ic) end
+	end
+	if showNx then
 		if nx.key ~= nextEntry.key then
 			nx.key = nextEntry.key
 			nx.tex:SetTexture(nextEntry.icon)
-			nx.fadeIn:Stop(); nx.fadeIn:Play()
+			nx.fadeIn:Stop()
+			if handover then nx:SetAlpha(1) else nx.fadeIn:Play() end
+			nx.glowIn:Stop(); nx.glowIn:Play()
 		end
 		nx:Show()
 	else
@@ -865,8 +887,12 @@ function T:Update()
 		local overlap = (prev and ic.x - prev.x < S * 0.9) or (nxt and nxt.x - ic.x < S * 0.9)
 		ic:SetAlpha(far and 0.45 or soon and 1 or overlap and 0.6 or 1)
 		ic:SetFrameLevel(self.bar:GetFrameLevel() + (soon and 6 or 5))
+		-- while growing, never cross the left edge: at 0 s it sits exactly where
+		-- "press this" appears
+		local x = math.max(ic.x, (ic.curSize or S) / 2)
+		ic.lastX = x
 		ic:ClearAllPoints()
-		ic:SetPoint("CENTER", self.bar, "LEFT", ic.x, 0)
+		ic:SetPoint("CENTER", self.bar, "LEFT", x, 0)
 		ic.text:SetText(ns.FormatTime(ic.rem))
 		ic:Show()
 		ic.wasMoving = true
@@ -881,7 +907,7 @@ function T:Pop(ic)
 	pop.tex:SetTexture(ic.tex:GetTexture())
 	pop.glow:SetTexture(ic.tex:GetTexture())
 	pop:ClearAllPoints()
-	pop:SetPoint("CENTER", self.bar, "LEFT", self:PosX(0), 0)
+	pop:SetPoint("CENTER", self.bar, "LEFT", ic.lastX or self:PosX(0), 0)
 	pop.anim:Stop(); pop.glowAnim:Stop()
 	pop:Show()
 	pop.anim:Play(); pop.glowAnim:Play()
