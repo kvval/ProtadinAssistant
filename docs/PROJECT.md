@@ -1,15 +1,17 @@
 # Protadin Assistant - project notes
 
 Addon for Protection Paladins in **World of Warcraft: Forever**. Author on CurseForge: Lori Quaid. License: MIT.
-Current version: **1.0.3** (2026-11-27).
+Current version: **1.0.3**, published on CurseForge and GitHub Releases on 2026-11-27 (first release through GitHub Actions).
+
+Links: [CurseForge](https://www.curseforge.com/wow/addons/protadin-assistant) (project 1826638) · [GitHub](https://github.com/kvval/ProtadinAssistant)
 
 ## Where things are
 
 | What | Where |
 |---|---|
-| Source code | `/mnt/d/VC/paladon/` - the repository root is the addon (toc, lua, Libs) |
+| Source code | `/mnt/d/VC/paladon/` - git repo, the root is the addon: `ProtadinAssistant.toc`, `Modules/`, `Locales/`, `Libs/` |
 | Installed copy (game) | `C:\WarCraft\World of Warcraft\_forever_\Interface\AddOns\ProtadinAssistant\` - a copy, not a link; run `tools/install.sh` after every change |
-| Release zips | `/mnt/d/VC/paladon/dist/` (latest: `ProtadinAssistant-1.0.3.zip`, must include `Libs/`) |
+| Release zips | built by GitHub Actions on a tag; `dist/` holds old local builds only (not in git) |
 | CurseForge page text | `docs/curseforge-description.md` (pasted by hand, the packager doesn't update it) |
 | Changelog for CurseForge | `CHANGELOG.md` (used by the packager) |
 | In-game Lua errors | `_forever_\Logs\General.log`, lines with `[E][Lua]` (written on exit / reload) |
@@ -32,16 +34,18 @@ Test character: Lori-Quaid (Protection paladin, English client).
 4. **Target checks:** `C_Spell.IsSpellUsable` says "usable" for Exorcism on a beast. `C_Spell.IsSpellInRange` returns `nil` both for an invalid target and for spells without range. Rule: `nil` plus a spell that has range means an invalid target.
 5. **Lua gotcha:** `tostring(f())` errors when `f` returns nothing - wrap it as `tostring((f()))`.
 
-## What the addon does (1.0.0)
+## What the addon does (1.0.3)
 
 **Buff tracker** (secure, clickable buttons): Aura, Blessing (own only), Righteous Fury, Tracking, Well Fed, Well-Rested, Camp Benefits.
 - A fade or the wrong buff makes the icon blink red and puts one chat line ("X has faded" / "X is up, expected Y").
 - A click recasts the buff, eats the XP food with the smallest count in the bags, or uses the sleeping bag / campfire kit.
 - On first run it takes the aura, blessing and tracking already active.
+- Well Fed / Well-Rested are switched on or off at every login by what's in the bags, unless the player switched them by hand. Camp Benefits is always shown.
+- Default place: right side, under the minimap.
 
-**Cooldown timeline:** a 10 s track, countdowns, a seal tracker (blinks at "now" when no seal), ready spells pop and hide, overlapping icons turn translucent. Shown only in combat by default.
-- **Suggest next:** gold icon = first ready, usable, in-range spell by priority.
-- **Highlight upcoming:** spells ready within 1.5 s grow.
+**Cooldown timeline:** a 10 s track, countdowns, a seal tracker (blinks at "now" when no seal), ready spells pop and hide, overlapping icons turn translucent. New installs see it always; "Only during combat" is an option (the welcome message points to it).
+- **Suggest next:** gold icon, 20% bigger, pulsing glow = first ready, usable, in-range spell by priority.
+- **Highlight upcoming:** spells ready within 1.5 s grow smoothly to the "Suggest next" size, the border fades to gold.
 - **Rotation, by prio:** one list of numbered drop-downs (position = priority; "- none -" removes a spell; "+ add a spell" adds one).
 
 **Priority from your play:** records pairwise choices (cast A while B was also ready). After 20 choices it offers an order (Apply / Forget). A chat notice is sent when the order changes noticeably: at most once a day, never twice for the same order, and it can be turned off ("Announce play style change").
@@ -52,6 +56,7 @@ Test character: Lori-Quaid (Protection paladin, English client).
 - Frames are locked by default. While they are unlocked, an 8 px grid is shown and frames snap to it and to the screen centre.
 - Multilingual: spells by ID (`Modules/Data.lua`), the interface in 10 languages (`Locales/Locales.lua`, key = English text).
 - Slash commands: `/protadin` (`/pda`) `lock | unlock | reset | auras | debug`.
+- One-time welcome message on the very first login.
 
 ## Code layout
 
@@ -72,7 +77,7 @@ Test character: Lori-Quaid (Protection paladin, English client).
 2. A mock WoW harness (`tools/harness.lua`, see `tools/README.md`) loads the whole addon in `.toc` order and runs the options, timeline, buffs and minimap clicks.
 3. A locale check confirms that every `L[...]` used in the code is in `KEYS` and that every locale has all keys with matching `%s` / `%d`.
 4. Targeted model tests: priority swaps, learned priority (simulated fights), notice throttling, loading screens, food pick, grid snapping.
-5. Then copy to the game, bump the version and build the zip.
+5. Then `tools/install.sh` puts it into the game for an in-game check.
 
 ## History (short)
 
@@ -86,7 +91,8 @@ Test character: Lori-Quaid (Protection paladin, English client).
 - **1.0.0:** release. CurseForge page rewritten in the author's voice.
 - **1.0.1:** upcoming spells grow smoothly (0-1.5 s, up to 120%) with a border fading to gold; "Suggest next" icon is 20% bigger with a pulsing gold glow; the ready pop matches the grown size.
 - **1.0.2:** first-run experience: buff tracker defaults to the right side under the minimap; Well Fed / Well-Rested are switched on or off at every login depending on XP food / sleeping bag in the bags; timeline shown always for new installs; one-time welcome + tip about "Only during combat".
-- **1.0.3:** a Well Fed / Well-Rested slot switched by hand in the options is never switched automatically again (foodManual / bagManual). Camp Benefits stays always visible (other players' campfires count too).
+- **1.0.3:** a Well Fed / Well-Rested slot switched by hand in the options is never switched automatically again (foodManual / bagManual). Camp Benefits stays always visible (other players' campfires count too). First release built and uploaded by GitHub Actions.
+- **After 1.0.3 (not released yet):** repository tidied up - code in `Modules/` and `Locales/`, notes in `docs/`.
 
 ## Releasing (GitHub + CurseForge)
 
@@ -95,20 +101,26 @@ Repository: https://github.com/kvval/ProtadinAssistant. The repository root is t
 1. Bump `## Version:` in `ProtadinAssistant.toc`.
 2. Update `CHANGELOG.md` - the packager uploads it as the release changelog.
 3. Commit and push to `main`.
-4. Only when the author says so: tag and push the tag, e.g. `git tag v1.0.4 && git push origin v1.0.4`.
+4. Only when the author says "выкладывай": tag and push the tag, e.g. `git tag -a v1.0.4 -m "Protadin Assistant 1.0.4" && git push origin v1.0.4`.
 5. GitHub Actions (`.github/workflows/release.yml`) runs the BigWigs packager: it builds the zip and uploads it to CurseForge (project 1826638, from `X-Curse-Project-ID` in the toc) and to GitHub Releases.
 
 Needs the repository secret `CURSEFORGE` (a CurseForge API token, passed to the packager as CF_API_KEY, added by the author in GitHub: Settings → Secrets and variables → Actions).
-A tag with `-beta` / `-alpha` makes a beta / alpha release on CurseForge.
+Plain commits to `main` publish nothing. No alpha builds (the author doesn't want them). The CurseForge page description is not touched by the packager: paste `docs/curseforge-description.md` by hand when it changes.
+
+To check what CurseForge really shows: `curl https://api.cfwidget.com/wow/addons/protadin-assistant` (JSON with files and description). The curseforge.com pages block scripts (403), and page fetchers may return stale copies.
+
+GitHub repo settings worth having (author does them in the browser): About with description, website and topics; Wikis/Projects off; Issues on; PRs squash-only with auto-delete of head branches; no branch protection that requires PRs (pushes go straight to `main`). Only the owner can push or tag; outsiders can only fork, open PRs and issues.
 
 ## Open items
 
-- [ ] Run a dungeon on 1.0.0 and check there are no Lua errors (the 0.3.1 aura-restriction fix is untested in a real instance).
+- [ ] In game: check 1.0.1-1.0.3 visuals (smooth growth, glowing "Suggest next") and the tidied layout after `/reload`.
+- [ ] Run a dungeon and check there are no Lua errors (the 0.3.1 aura-restriction fix is untested in a real instance).
 - [ ] Try clicks in game: minimap button, food, campfire kit.
 - [ ] Get the **Camp Benefits** spell ID (`/protadin auras` at a camp). Until then the camp icon only works on English clients.
 - [ ] Check "X has faded" on a natural expiry in normal play.
-- [ ] CurseForge: delete / archive 0.3.0 and 0.3.1 (they were under review), upload 1.0.0 as Release, paste the new description and changelog.
-- [x] Old zips in `dist/` cleaned (2026-11-24), only 1.0.0 kept.
+- [ ] CurseForge: delete / archive 0.3.0 and 0.3.1 if they are still there.
+- [ ] Optional: GitHub About/topics and feature toggles (see Releasing); update `actions/checkout` to a Node 24 version when the deprecation warning starts to matter.
+- Ideas, not planned: the same addon for other classes (warrior tank and shaman fit best).
 
 ## Working agreements
 
