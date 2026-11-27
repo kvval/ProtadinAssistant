@@ -1,3 +1,4 @@
+<!-- Summary (project settings): Self-learning ability timeline and buff watcher for Protection Paladins. -->
 # Protadin Assistant
 
 Small addon for Protection Paladins in WoW Forever. It keeps an eye on your buffs and your rotation, so you can just tank.
