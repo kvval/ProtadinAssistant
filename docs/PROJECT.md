@@ -111,7 +111,7 @@ Repository: https://github.com/kvval/ProtadinAssistant. The repository root is t
 2. Update `CHANGELOG.md` - the packager uploads it as the release changelog.
 3. Commit and push to `main`.
 4. Flow: install into the client → the author tests in game → the author approves publishing → show him the changelog → after his OK on the text, tag and push the tag **as a separate final step**: `git tag -a v1.0.7 -m "Protadin Assistant 1.0.7" && git push origin v1.0.7`.
-5. GitHub Actions (`.github/workflows/release.yml`) runs the BigWigs packager: it builds the zip and uploads it to CurseForge (project 1826638, from `X-Curse-Project-ID` in the toc) and to GitHub Releases.
+5. GitHub Actions (`.github/workflows/release.yml`) first runs `tools/run_all.sh` (installs lua5.1 on the runner; any failed check stops the release), then the BigWigs packager: it builds the zip and uploads it to CurseForge (project 1826638, from `X-Curse-Project-ID` in the toc) and to GitHub Releases.
 6. Check the result with `tools/release_log.sh v1.0.7` ("Uploading ... Success!"). It reads the Actions log with the author's GitHub login from Git Credential Manager (allowed by him).
 
 Needs the repository secret `CURSEFORGE` (a CurseForge API token, passed to the packager as CF_API_KEY, added by the author in GitHub: Settings → Secrets and variables → Actions).
@@ -126,7 +126,7 @@ GitHub repo settings worth having (author does them in the browser): About with 
 - [x] Dungeon run without Lua errors (author, 2026-11-27).
 - [x] In-game clicks: minimap button, food, campfire kit look fine (author, 2026-11-27).
 - [ ] Once the Camp Benefits ID is seen (`/protadin debug` shows it), hardcode it in `Data.lua` (`CAMP_BENEFITS`) for every user.
-- [ ] Undecided: running `tools/run_all.sh` as a step before the packager in `release.yml` (the auto-mode classifier blocked editing the workflow; the author can allow it or add the step in the browser).
+- [x] `release.yml` runs `tools/run_all.sh` before the packager (2026-11-27). First real run happens with the next tag - if it fails on the GitHub runner, nothing is published and the log shows why.
 - [ ] Optional: update `actions/checkout` to a Node 24 version when the deprecation warning starts to matter.
 - Ideas, not planned: the same addon for other classes (warrior tank and shaman fit best). Rejected ideas: GCD sweep on the hint, "expiring soon" colours, error-catch wrapper, minimap learning-status line, undo button.
 
