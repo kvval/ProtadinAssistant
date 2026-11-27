@@ -525,6 +525,24 @@ ev:SetScript("OnEvent", function(_, event, arg1)
 end)
 
 ---------------------------------------------------------------------------
+-- Clickable [Options] in chat (native "addon" hyperlinks)
+---------------------------------------------------------------------------
+function ns.OptionsLink()
+	return "|cff71d5ff|Haddon:ProtadinAssistant:options|h[" .. ns.L["Options"] .. "]|h|r"
+end
+
+local function OnLink(link)
+	if type(link) == "string" and not ns.IsSecret(link) and link:find("addon:ProtadinAssistant:options", 1, true) then
+		ns.OpenOptions()
+	end
+end
+if EventRegistry and EventRegistry.RegisterCallback then
+	EventRegistry:RegisterCallback("SetItemRef", function(_, link) OnLink(link) end)
+elseif hooksecurefunc and SetItemRef then
+	hooksecurefunc("SetItemRef", function(link) OnLink(link) end)
+end
+
+---------------------------------------------------------------------------
 -- Copyable output window (/protadin debug, /protadin auras)
 ---------------------------------------------------------------------------
 local copyFrame

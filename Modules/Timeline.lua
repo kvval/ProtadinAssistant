@@ -711,7 +711,13 @@ function T:AutoAdapt()
 	local swaps = Swaps(cur, order)
 	if #swaps == 0 then return end
 	self:ApplyLearned()
-	ns.Print(L["priority %s."]:format(table.concat(swaps, ", ")))
+	local msg = L["priority %s."]:format(table.concat(swaps, ", "))
+	-- the first adjustment after each login also says how to turn it off
+	if not self.offHintShown then
+		self.offHintShown = true
+		msg = msg .. " " .. L["Turn it off in %s."]:format(ns.OptionsLink())
+	end
+	ns.Print(msg)
 	if ns.RefreshOptions then ns.RefreshOptions() end
 end
 

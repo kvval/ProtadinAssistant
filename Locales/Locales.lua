@@ -41,6 +41,8 @@ local KEYS = {
 	"Learned priority cleared.",
 	-- pre-pull check, copy window (1.0.6)
 	"Missing: %s.", "Ctrl+A, Ctrl+C to copy",
+	-- auto-adapt off hint (1.0.6)
+	"Turn it off in %s.",
 }
 
 local T = {}
@@ -119,6 +121,7 @@ T.ruRU = {
 	["Learned priority cleared."] = "Выученный приоритет стёрт.",
 	["Missing: %s."] = "Не хватает: %s.",
 	["Ctrl+A, Ctrl+C to copy"] = "Ctrl+A, Ctrl+C — скопировать",
+	["Turn it off in %s."] = "Отключить можно в %s.",
 }
 
 T.deDE = {
@@ -195,6 +198,7 @@ T.deDE = {
 	["Learned priority cleared."] = "Gelernte Priorität gelöscht.",
 	["Missing: %s."] = "Es fehlt: %s.",
 	["Ctrl+A, Ctrl+C to copy"] = "Strg+A, Strg+C zum Kopieren",
+	["Turn it off in %s."] = "Abschalten in %s.",
 }
 
 T.frFR = {
@@ -271,6 +275,7 @@ T.frFR = {
 	["Learned priority cleared."] = "Priorité apprise effacée.",
 	["Missing: %s."] = "Manquant : %s.",
 	["Ctrl+A, Ctrl+C to copy"] = "Ctrl+A, Ctrl+C pour copier",
+	["Turn it off in %s."] = "Désactivable dans %s.",
 }
 
 T.esES = {
@@ -347,6 +352,7 @@ T.esES = {
 	["Learned priority cleared."] = "Prioridad aprendida borrada.",
 	["Missing: %s."] = "Falta: %s.",
 	["Ctrl+A, Ctrl+C to copy"] = "Ctrl+A, Ctrl+C para copiar",
+	["Turn it off in %s."] = "Se puede desactivar en %s.",
 }
 T.esMX = T.esES
 
@@ -424,6 +430,7 @@ T.ptBR = {
 	["Learned priority cleared."] = "Prioridade aprendida apagada.",
 	["Missing: %s."] = "Faltando: %s.",
 	["Ctrl+A, Ctrl+C to copy"] = "Ctrl+A, Ctrl+C para copiar",
+	["Turn it off in %s."] = "Desative em %s.",
 }
 
 T.itIT = {
@@ -500,6 +507,7 @@ T.itIT = {
 	["Learned priority cleared."] = "Priorità appresa cancellata.",
 	["Missing: %s."] = "Mancante: %s.",
 	["Ctrl+A, Ctrl+C to copy"] = "Ctrl+A, Ctrl+C per copiare",
+	["Turn it off in %s."] = "Si può disattivare in %s.",
 }
 
 T.koKR = {
@@ -576,6 +584,7 @@ T.koKR = {
 	["Learned priority cleared."] = "학습한 우선순위를 지웠습니다.",
 	["Missing: %s."] = "없음: %s.",
 	["Ctrl+A, Ctrl+C to copy"] = "Ctrl+A, Ctrl+C로 복사",
+	["Turn it off in %s."] = "%s에서 끌 수 있습니다.",
 }
 
 T.zhCN = {
@@ -652,6 +661,7 @@ T.zhCN = {
 	["Learned priority cleared."] = "已清除学到的优先级。",
 	["Missing: %s."] = "缺少：%s。",
 	["Ctrl+A, Ctrl+C to copy"] = "Ctrl+A、Ctrl+C 复制",
+	["Turn it off in %s."] = "可在%s中关闭。",
 }
 
 T.zhTW = {
@@ -728,6 +738,7 @@ T.zhTW = {
 	["Learned priority cleared."] = "已清除學到的優先順序。",
 	["Missing: %s."] = "缺少：%s。",
 	["Ctrl+A, Ctrl+C to copy"] = "Ctrl+A、Ctrl+C 複製",
+	["Turn it off in %s."] = "可在%s中關閉。",
 }
 
 local strings = T[GetLocale()]

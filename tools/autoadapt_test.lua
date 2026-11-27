@@ -6,6 +6,7 @@ ns.defaultTimelineSpells = { ["Judgement"]=true, ["Holy Strike"]=true, ["Consecr
 local printed = {}
 ns.Print = function(msg) printed[#printed+1] = msg end
 ns.SpellLink = function(spell) return "[" .. tostring(spell) .. "]" end
+ns.OptionsLink = function() return "[Options]" end
 assert(loadfile(arg[1] .. "/Modules/Timeline.lua"))("x", ns)
 local T = ns.timeline
 T.RebuildEntries = function() end
