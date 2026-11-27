@@ -691,6 +691,29 @@ function ns.CaptureToWindow(fn)
 end
 
 ---------------------------------------------------------------------------
+-- /protadin help
+---------------------------------------------------------------------------
+local HELP = {
+	{ "", "open the options" },
+	{ "lock", "lock the frames" },
+	{ "unlock", "unlock the frames to move them" },
+	{ "reset", "put the frames back to their default places" },
+	{ "forget", "forget the learned priority" },
+	{ "auras", "list the buffs on you" },
+	{ "debug", "debug info for bug reports" },
+	{ "help", "this list" },
+}
+
+function ns.PrintHelp()
+	local L = ns.L
+	ns.Print(L["commands (/protadin or /pda):"])
+	for _, h in ipairs(HELP) do
+		local cmd = h[1] == "" and "/protadin" or ("/protadin " .. h[1])
+		print(("  |cffffd200%s|r - %s"):format(cmd, L[h[2]]))
+	end
+end
+
+---------------------------------------------------------------------------
 -- Slash commands
 ---------------------------------------------------------------------------
 SLASH_PROTADIN1 = "/protadin"
@@ -728,7 +751,7 @@ SlashCmdList.PROTADIN = function(msg)
 		end)
 	elseif cmd == "" or cmd == "options" or cmd == "config" then
 		ns.OpenOptions()
-	else
-		ns.Print("/protadin [options] | lock | unlock | reset | forget | auras | debug")
+	else -- "help" and anything unknown
+		ns.PrintHelp()
 	end
 end

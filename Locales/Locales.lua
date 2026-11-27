@@ -43,6 +43,8 @@ local KEYS = {
 	"Missing: %s.", "Ctrl+A, Ctrl+C to copy",
 	-- auto-adapt off hint (1.0.6)
 	"Turn it off in %s.",
+	-- /protadin help (1.0.6)
+	"commands (/protadin or /pda):", "open the options", "lock the frames", "unlock the frames to move them", "put the frames back to their default places", "forget the learned priority", "list the buffs on you", "debug info for bug reports", "this list",
 }
 
 local T = {}
@@ -122,6 +124,15 @@ T.ruRU = {
 	["Missing: %s."] = "Не хватает: %s.",
 	["Ctrl+A, Ctrl+C to copy"] = "Ctrl+A, Ctrl+C — скопировать",
 	["Turn it off in %s."] = "Отключить можно в %s.",
+	["commands (/protadin or /pda):"] = "команды (/protadin или /pda):",
+	["open the options"] = "открыть настройки",
+	["lock the frames"] = "зафиксировать блоки",
+	["unlock the frames to move them"] = "разблокировать блоки, чтобы двигать",
+	["put the frames back to their default places"] = "вернуть блоки на места по умолчанию",
+	["forget the learned priority"] = "забыть выученный приоритет",
+	["list the buffs on you"] = "список бафов на тебе",
+	["debug info for bug reports"] = "отладка для баг-репортов",
+	["this list"] = "этот список",
 }
 
 T.deDE = {
@@ -199,6 +210,15 @@ T.deDE = {
 	["Missing: %s."] = "Es fehlt: %s.",
 	["Ctrl+A, Ctrl+C to copy"] = "Strg+A, Strg+C zum Kopieren",
 	["Turn it off in %s."] = "Abschalten in %s.",
+	["commands (/protadin or /pda):"] = "Befehle (/protadin oder /pda):",
+	["open the options"] = "Optionen öffnen",
+	["lock the frames"] = "Rahmen fixieren",
+	["unlock the frames to move them"] = "Rahmen entsperren, um sie zu verschieben",
+	["put the frames back to their default places"] = "Rahmen an die Standardposition zurücksetzen",
+	["forget the learned priority"] = "gelernte Priorität vergessen",
+	["list the buffs on you"] = "Buffs auf dir anzeigen",
+	["debug info for bug reports"] = "Debug-Infos für Fehlerberichte",
+	["this list"] = "diese Liste",
 }
 
 T.frFR = {
@@ -276,6 +296,15 @@ T.frFR = {
 	["Missing: %s."] = "Manquant : %s.",
 	["Ctrl+A, Ctrl+C to copy"] = "Ctrl+A, Ctrl+C pour copier",
 	["Turn it off in %s."] = "Désactivable dans %s.",
+	["commands (/protadin or /pda):"] = "commandes (/protadin ou /pda) :",
+	["open the options"] = "ouvrir les options",
+	["lock the frames"] = "verrouiller les cadres",
+	["unlock the frames to move them"] = "déverrouiller les cadres pour les déplacer",
+	["put the frames back to their default places"] = "remettre les cadres à leur place par défaut",
+	["forget the learned priority"] = "oublier la priorité apprise",
+	["list the buffs on you"] = "lister vos améliorations",
+	["debug info for bug reports"] = "infos de débogage pour signaler un bug",
+	["this list"] = "cette liste",
 }
 
 T.esES = {
@@ -353,6 +382,15 @@ T.esES = {
 	["Missing: %s."] = "Falta: %s.",
 	["Ctrl+A, Ctrl+C to copy"] = "Ctrl+A, Ctrl+C para copiar",
 	["Turn it off in %s."] = "Se puede desactivar en %s.",
+	["commands (/protadin or /pda):"] = "comandos (/protadin o /pda):",
+	["open the options"] = "abrir las opciones",
+	["lock the frames"] = "bloquear los marcos",
+	["unlock the frames to move them"] = "desbloquear los marcos para moverlos",
+	["put the frames back to their default places"] = "devolver los marcos a su sitio",
+	["forget the learned priority"] = "olvidar la prioridad aprendida",
+	["list the buffs on you"] = "listar tus beneficios",
+	["debug info for bug reports"] = "información de depuración para informes de errores",
+	["this list"] = "esta lista",
 }
 T.esMX = T.esES
 
@@ -431,6 +469,15 @@ T.ptBR = {
 	["Missing: %s."] = "Faltando: %s.",
 	["Ctrl+A, Ctrl+C to copy"] = "Ctrl+A, Ctrl+C para copiar",
 	["Turn it off in %s."] = "Desative em %s.",
+	["commands (/protadin or /pda):"] = "comandos (/protadin ou /pda):",
+	["open the options"] = "abrir as opções",
+	["lock the frames"] = "travar os quadros",
+	["unlock the frames to move them"] = "destravar os quadros para movê-los",
+	["put the frames back to their default places"] = "devolver os quadros ao lugar padrão",
+	["forget the learned priority"] = "esquecer a prioridade aprendida",
+	["list the buffs on you"] = "listar seus bônus",
+	["debug info for bug reports"] = "informações de depuração para relatar bugs",
+	["this list"] = "esta lista",
 }
 
 T.itIT = {
@@ -508,6 +555,15 @@ T.itIT = {
 	["Missing: %s."] = "Mancante: %s.",
 	["Ctrl+A, Ctrl+C to copy"] = "Ctrl+A, Ctrl+C per copiare",
 	["Turn it off in %s."] = "Si può disattivare in %s.",
+	["commands (/protadin or /pda):"] = "comandi (/protadin o /pda):",
+	["open the options"] = "apri le opzioni",
+	["lock the frames"] = "blocca i riquadri",
+	["unlock the frames to move them"] = "sblocca i riquadri per spostarli",
+	["put the frames back to their default places"] = "riporta i riquadri al loro posto",
+	["forget the learned priority"] = "dimentica la priorità appresa",
+	["list the buffs on you"] = "elenca i tuoi benefici",
+	["debug info for bug reports"] = "info di debug per segnalare bug",
+	["this list"] = "questo elenco",
 }
 
 T.koKR = {
@@ -585,6 +641,15 @@ T.koKR = {
 	["Missing: %s."] = "없음: %s.",
 	["Ctrl+A, Ctrl+C to copy"] = "Ctrl+A, Ctrl+C로 복사",
 	["Turn it off in %s."] = "%s에서 끌 수 있습니다.",
+	["commands (/protadin or /pda):"] = "명령어 (/protadin 또는 /pda):",
+	["open the options"] = "설정 열기",
+	["lock the frames"] = "창 고정",
+	["unlock the frames to move them"] = "창 고정 해제 (이동)",
+	["put the frames back to their default places"] = "창을 기본 위치로",
+	["forget the learned priority"] = "학습한 우선순위 지우기",
+	["list the buffs on you"] = "내 강화 효과 목록",
+	["debug info for bug reports"] = "버그 보고용 디버그 정보",
+	["this list"] = "이 목록",
 }
 
 T.zhCN = {
@@ -662,6 +727,15 @@ T.zhCN = {
 	["Missing: %s."] = "缺少：%s。",
 	["Ctrl+A, Ctrl+C to copy"] = "Ctrl+A、Ctrl+C 复制",
 	["Turn it off in %s."] = "可在%s中关闭。",
+	["commands (/protadin or /pda):"] = "命令（/protadin 或 /pda）：",
+	["open the options"] = "打开设置",
+	["lock the frames"] = "锁定框体",
+	["unlock the frames to move them"] = "解锁框体以移动",
+	["put the frames back to their default places"] = "框体回到默认位置",
+	["forget the learned priority"] = "清除学到的优先级",
+	["list the buffs on you"] = "列出你身上的增益",
+	["debug info for bug reports"] = "用于报告错误的调试信息",
+	["this list"] = "本列表",
 }
 
 T.zhTW = {
@@ -739,6 +813,15 @@ T.zhTW = {
 	["Missing: %s."] = "缺少：%s。",
 	["Ctrl+A, Ctrl+C to copy"] = "Ctrl+A、Ctrl+C 複製",
 	["Turn it off in %s."] = "可在%s中關閉。",
+	["commands (/protadin or /pda):"] = "指令（/protadin 或 /pda）：",
+	["open the options"] = "開啟設定",
+	["lock the frames"] = "鎖定框架",
+	["unlock the frames to move them"] = "解鎖框架以移動",
+	["put the frames back to their default places"] = "框架回到預設位置",
+	["forget the learned priority"] = "清除學到的優先順序",
+	["list the buffs on you"] = "列出你身上的增益",
+	["debug info for bug reports"] = "用於回報錯誤的除錯資訊",
+	["this list"] = "本列表",
 }
 
 local strings = T[GetLocale()]

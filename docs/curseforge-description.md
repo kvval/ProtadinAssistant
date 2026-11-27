@@ -23,6 +23,7 @@ Works out of the box. No other addons needed.
 | `/protadin lock` / `unlock` | lock / move the frames |
 | `/protadin reset` | frames back to default places |
 | `/protadin forget` | forget the learned priority, start learning again |
+| `/protadin help` | all commands |
 
 `/pda` works too. Right-click the minimap button for options.
 
