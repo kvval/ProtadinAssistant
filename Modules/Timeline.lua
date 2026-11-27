@@ -6,7 +6,7 @@ table.insert(ns.modules, T)
 
 local L = ns.L
 local SEAL_KEY = "__seal"
-local NEXT_SCALE = 1.2   -- "press this" icon size vs. normal icons
+local NEXT_SCALE = 1.32  -- "press this" icon size vs. normal icons
 local SOON_SCALE = NEXT_SCALE -- upcoming spells grow to exactly the "press this" size
 
 --[[ How cooldowns are known
