@@ -79,10 +79,33 @@ end
 -- unknown / secret -> assume yes
 function ns.IsUsable(spellID)
 	local f = (C_Spell and C_Spell.IsSpellUsable) or IsUsableSpell
-	if not f then return true end
-	local ok, usable = pcall(f, spellID)
-	if not ok or usable == nil or ns.IsSecret(usable) then return true end
-	return usable and true or false
+	if f then
+		-- the client answers two things: "usable" and "not enough mana"
+		local ok, usable, noMana = pcall(f, spellID)
+		if ok then
+			if noMana ~= nil and not ns.IsSecret(noMana) and noMana then return false end
+			if usable ~= nil and not ns.IsSecret(usable) and not usable then return false end
+		end
+	end
+	return ns.HasManaFor(spellID)
+end
+
+-- do we have the mana for it right now? (unknown / secret -> yes)
+local MANA = (Enum and Enum.PowerType and Enum.PowerType.Mana) or 0
+function ns.HasManaFor(spellID)
+	local getCost = (C_Spell and C_Spell.GetSpellPowerCost) or GetSpellPowerCost
+	if not getCost then return true end
+	local ok, costs = pcall(getCost, spellID)
+	if not ok or type(costs) ~= "table" then return true end
+	for _, c in ipairs(costs) do
+		local ptype, cost = c.type, c.cost
+		if ptype ~= nil and cost ~= nil and not ns.IsSecret(ptype) and not ns.IsSecret(cost)
+			and ptype == MANA and cost > 0 then
+			local okP, power = pcall(UnitPower, "player", MANA)
+			if okP and power ~= nil and not ns.IsSecret(power) and power < cost then return false end
+		end
+	end
+	return true
 end
 
 -- does the spell have a range at all (needs a target)? Consecration / Holy Shield don't.
