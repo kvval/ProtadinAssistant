@@ -699,7 +699,6 @@ local HELP = {
 	{ "unlock", "unlock the frames to move them" },
 	{ "reset", "put the frames back to their default places" },
 	{ "forget", "forget the learned priority" },
-	{ "auras", "list the buffs on you" },
 	{ "debug", "debug info for bug reports" },
 	{ "help", "this list" },
 }
@@ -733,21 +732,19 @@ SlashCmdList.PROTADIN = function(msg)
 		ns.timeline:ForgetLearned()
 		ns.Print(L["Learned priority cleared."])
 		if ns.RefreshOptions then ns.RefreshOptions() end
-	elseif cmd == "auras" then
-		ns.CaptureToWindow(function()
-		ns.Print(L["buffs on you:"])
-		local readable = ns.ForEachPlayerAura(function(a)
-			if ns.IsSecret(a.name) then ns.Print("  " .. L["(hidden in combat)"]) return true end
-			local id = not ns.IsSecret(a.spellId) and a.spellId or "?"
-			local icon = not ns.IsSecret(a.icon) and a.icon or "?"
-			ns.Print(("  %s  (spell %s, icon %s)"):format(a.name, tostring(id), tostring(icon)))
-		end)
-		if not readable then ns.Print("  " .. L["(hidden in combat)"]) end
-		end)
-	elseif cmd == "debug" then
+	elseif cmd == "debug" or cmd == "auras" then -- "auras" is the old name, kept working
 		ns.CaptureToWindow(function()
 			ns.Print("Protadin Assistant " .. tostring(ns.version or "?") .. ", client " .. tostring((GetBuildInfo and select(1, GetBuildInfo())) or "?"))
 			for _, m in ipairs(ns.modules) do if m.Debug then m:Debug() end end
+			-- every buff on the player with its spell ID
+			ns.Print(L["buffs on you:"])
+			local readable = ns.ForEachPlayerAura(function(a)
+				if ns.IsSecret(a.name) then ns.Print("  " .. L["(hidden in combat)"]) return true end
+				local id = not ns.IsSecret(a.spellId) and a.spellId or "?"
+				local icon = not ns.IsSecret(a.icon) and a.icon or "?"
+				ns.Print(("  %s  (spell %s, icon %s)"):format(a.name, tostring(id), tostring(icon)))
+			end)
+			if not readable then ns.Print("  " .. L["(hidden in combat)"]) end
 		end)
 	elseif cmd == "" or cmd == "options" or cmd == "config" then
 		ns.OpenOptions()

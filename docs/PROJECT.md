@@ -51,11 +51,11 @@ Test character: Lori-Quaid (Protection paladin, English client).
 **Priority from your play:** records pairwise choices (cast A while B was also ready). After 20 choices it offers an order (Apply / Forget). Details: casts that just follow the "Suggest next" hint are not learned (else the order confirms itself); every new choice ages old ones (half-life 500 choices); a pair counts only with ≥5 weighted comparisons and a winner whose Wilson lower bound (90%) is above 50%, so a few lucky casts (e.g. Exorcism 6:4) can't decide the order. Situational spells - castable in under half of the moments they are off cooldown (≥10 weighted observations, `learn.avail`), e.g. Exorcism, Hammer of Wrath - are left out of learning and keep the place the player gave them; shown in [brackets] in the suggested order. "Adapt automatically" (default on): after a fight, once 25 new choices are in, the learned order is applied and one chat line lists only the swaps ("priority Holy Shield <-> Judgement."). The old once-a-day "suggests a new priority" notice is gone.
 
 **Other:**
-- Minimap button (embedded LibDBIcon): LMB applies the learned priority, RMB opens options, Shift+LMB locks / unlocks, Shift+RMB resets positions, Ctrl+LMB lists auras, Ctrl+RMB prints debug.
+- Minimap button (embedded LibDBIcon): LMB applies the learned priority, RMB opens options, Shift+LMB locks / unlocks, Shift+RMB resets positions, Ctrl+RMB opens debug.
 - Options panel with three bordered sections: General, Buff tracker, Cooldown timeline.
 - Frames are locked by default. While they are unlocked, an 8 px grid is shown and frames snap to it and to the screen centre.
 - Multilingual: spells by ID (`Modules/Data.lua`), the interface in 10 languages (`Locales/Locales.lua`, key = English text).
-- Slash commands: `/protadin` (`/pda`) `lock | unlock | reset | auras | debug`.
+- Slash commands: `/protadin` (`/pda`) `lock | unlock | reset | forget | debug | help`. `debug` opens a copyable window and also lists the buffs on you (`auras` is an old alias).
 - One-time welcome message on the very first login.
 
 ## Saved data

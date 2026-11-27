@@ -18,8 +18,7 @@ function M:OnClick(button)
 		elseif shift then Run("reset")
 		else Run("options") end
 	else
-		if ctrl then Run("auras")
-		elseif shift then Run(ns.db.locked and "unlock" or "lock")
+		if shift then Run(ns.db.locked and "unlock" or "lock")
 		else ns.timeline:ApplyLearnedFromUI() end
 	end
 end
@@ -31,7 +30,6 @@ local function Tooltip(tt)
 	line(L["Right-click"], L["Options"])
 	line(L["Shift + left-click"], L["Lock / unlock frames"])
 	line(L["Shift + right-click"], L["Reset positions"])
-	line(L["Ctrl + left-click"], L["List buffs on you"])
 	line(L["Ctrl + right-click"], L["Debug info"])
 end
 
