@@ -1,3 +1,9 @@
+# Protadin Assistant 1.0.8
+
+- **Steady priority.** Spells you press equally stay where they are; the order changes only for a clear habit.
+- **Learned choices in the options.** Shows how many of your choices count.
+- **Leveling buffs step aside at max level.** Food and Sleeping Bag hide at the top level; Camp Benefits stays.
+
 # Protadin Assistant 1.0.7
 
 - **Lighter.** Many times less memory use, in and out of combat.
