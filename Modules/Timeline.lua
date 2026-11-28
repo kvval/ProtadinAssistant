@@ -568,6 +568,14 @@ local OVERTURN = 0.6 -- the lower spell of a pair moves up only when its Wilson
 local HALF_LIFE = 500 -- choices after which old choices weigh half as much
 local DECAY = 0.5 ^ (1 / HALF_LIFE)
 
+-- how many choices actually count: each choice ages all earlier ones by DECAY,
+-- so the total weight of n choices is 1 + d + d^2 + ... = (1 - d^n) / (1 - d),
+-- which levels off at about 720 however long you play
+function T:EffectiveChoices(n)
+	n = n or (self.db.learn and self.db.learn.choices) or 0
+	return (1 - DECAY ^ n) / (1 - DECAY)
+end
+
 -- lower bound of the Wilson score interval: a win rate we can trust given
 -- how few comparisons there are (6 of 10 -> ~0.34, 378 of 442 -> ~0.83)
 local function WilsonLow(won, n)
