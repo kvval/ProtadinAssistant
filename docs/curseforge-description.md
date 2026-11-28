@@ -2,7 +2,7 @@
 # Protadin Assistant
 
 Self-learning Ability Timeline and Buff Watcher for Protection Paladins.
-Works out of the box. No other addons needed.
+Works out of the box.
 
 ## Ability Timeline
 
