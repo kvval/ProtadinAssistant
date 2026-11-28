@@ -461,7 +461,7 @@ function O:Refresh()
 	else
 		local same = true
 		for i, sp in ipairs(enabled) do if order[i] ~= sp.name then same = false end end
-		lt:SetText(L["From your play:"] .. " " .. T:FormatOrder(order)
+		lt:SetText(L["From your play (%d choices):"]:format(math.floor(n)) .. " " .. T:FormatOrder(order)
 			.. (same and (" " .. L["(same as now)"]) or ""))
 		apply:SetEnabled(not same)
 	end
