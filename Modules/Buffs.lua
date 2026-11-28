@@ -202,7 +202,7 @@ function B:Enable()
 	f:RegisterEvent("BAG_UPDATE_DELAYED")
 	f:RegisterEvent("PLAYER_REGEN_ENABLED")
 	for _, ev in ipairs({ "PLAYER_DEAD", "PLAYER_ALIVE", "PLAYER_UNGHOST", "PLAYER_CONTROL_LOST",
-		"PLAYER_CONTROL_GAINED", "UNIT_ENTERED_VEHICLE", "UNIT_EXITED_VEHICLE", "READY_CHECK" }) do
+		"PLAYER_CONTROL_GAINED", "UNIT_ENTERED_VEHICLE", "UNIT_EXITED_VEHICLE", "READY_CHECK", "PLAYER_LEVEL_UP" }) do
 		pcall(f.RegisterEvent, f, ev)
 	end
 	f:SetScript("OnEvent", function(_, event, ...) B:OnEvent(event, ...) end)
@@ -335,18 +335,26 @@ end
 -- food in the bags, and Well-Rested only if the Cozy Sleeping Bag is there.
 -- Once the player has switched a slot by hand (foodManual / bagManual), it is
 -- left alone.
-function B:AutoSlots()
+-- XP food and the sleeping bag are about levelling: at the top level they
+-- are switched off (unless the player switched them by hand)
+function B:AtMaxLevel(level)
+	local max = (GetMaxPlayerLevel and GetMaxPlayerLevel()) or MAX_PLAYER_LEVEL or 60
+	return (level or (UnitLevel and UnitLevel("player")) or 0) >= max
+end
+
+function B:AutoSlots(level)
 	local db = self.db
 	local changed = false
+	local levelling = not self:AtMaxLevel(level)
 	if not db.foodManual then
-		local hasFood = ns.PickXPFood() ~= nil
+		local hasFood = levelling and ns.PickXPFood() ~= nil
 		if db.foodOn ~= hasFood then db.foodOn, changed = hasFood, true end
 	end
 	if not db.bagManual then
 		local id = ns.D.SLEEPING_BAG
 		local count = (C_Item and C_Item.GetItemCount and C_Item.GetItemCount(id))
 			or (GetItemCount and GetItemCount(id)) or 0
-		local hasBag = count > 0
+		local hasBag = levelling and count > 0
 		if db.bagOn ~= hasBag then db.bagOn, changed = hasBag, true end
 	end
 	if changed then self:ApplySettings() end
@@ -364,6 +372,11 @@ function B:OnEvent(event, ...)
 	if event == "PLAYER_ENTERING_WORLD" then self:EndLoading() end
 	if event == "READY_CHECK" then
 		self:PrepullCheck()
+		return
+	end
+	if event == "PLAYER_LEVEL_UP" then
+		local level = ...
+		self:AutoSlots(tonumber(level))
 		return
 	end
 	if event == "PLAYER_DEAD" or event == "PLAYER_ALIVE" or event == "PLAYER_UNGHOST"

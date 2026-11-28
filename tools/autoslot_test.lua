@@ -123,4 +123,16 @@ ns.db.buffs.foodOn = false; ns.db.buffs.foodManual = true
 BAGS = { [0] = { {12210, 3}, {211527, 1} } }
 show("food off by hand, food in bags:")
 print("default buffs point:", table.concat(ns.defaults.buffs.point, " "), "| onlyInCombat default:", tostring(ns.defaults.timeline.onlyInCombat))
+-- top level: XP food and sleeping bag are about levelling
+ns.db.buffs.foodManual = nil; ns.db.buffs.bagManual = nil
+BAGS = { [0] = { {12210, 3}, {211527, 1} } }
+UnitLevel = function() return 60 end
+GetMaxPlayerLevel = function() return 60 end
+show("level 60, food + bag:")
+ns.db.buffs.bagOn = true; ns.db.buffs.bagManual = true
+show("level 60, bag on by hand:")
+UnitLevel = function() return 59 end
+ns.db.buffs.bagManual = nil
+B:OnEvent("PLAYER_LEVEL_UP", 60)
+print(("%-28s foodOn=%s bagOn=%s"):format("level up 59 -> 60:", tostring(ns.db.buffs.foodOn), tostring(ns.db.buffs.bagOn)))
 print("AUTOSLOT TEST DONE")
