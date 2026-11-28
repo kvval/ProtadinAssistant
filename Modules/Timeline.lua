@@ -563,6 +563,8 @@ end
 T.LEARN_MIN = 20     -- choices needed before an order is offered
 local MIN_PAIR = 5   -- (weighted) comparisons needed before a pair counts
 local Z = 1.645      -- ~90% confidence for "this pair has a clear winner"
+local OVERTURN = 0.6 -- the lower spell of a pair moves up only when its Wilson
+                     -- lower bound is above this; pairs near 50/50 stay put
 local HALF_LIFE = 500 -- choices after which old choices weigh half as much
 local DECAY = 0.5 ^ (1 / HALF_LIFE)
 
@@ -680,16 +682,15 @@ end
 -- enabled spells ordered by the player's choices; returns names, #choices.
 -- Situational spells keep their current positions; the rest are ordered by
 -- the learned choices around them.
--- A ranks above B when A was picked over B more often than the reverse
--- (a pair only counts with at least MIN_PAIR comparisons and a winner whose
--- Wilson lower bound is above 50%, so a handful of lucky casts can't decide
--- the order); ties fall back
--- to the overall win rate, then to the current order.
+-- The current order stands; a pair swaps only when the lower spell was picked
+-- over the upper one clearly: at least MIN_PAIR comparisons and a Wilson lower
+-- bound above OVERTURN. Swapping back needs the same in the other direction,
+-- so pairs near 50/50 don't flip back and forth. Ties keep the current order.
 function T:LearnedOrder()
 	local learn = self.db.learn
 	local wins = learn.wins
 	local function w(a, b) return (wins[a] and wins[a][b]) or 0 end
-	local names, cur, score, won, seen = {}, {}, {}, {}, {}
+	local names, cur, score = {}, {}, {}
 	local fixed = {} -- position -> situational spell
 	local enabled = self:EnabledByPriority()
 	for i, s in ipairs(enabled) do
@@ -698,23 +699,24 @@ function T:LearnedOrder()
 		else names[#names + 1] = s.name end
 	end
 	for _, a in ipairs(names) do
-		score[a], won[a], seen[a] = 0, 0, 0
+		score[a] = 0
 		for _, b in ipairs(names) do
 			if a ~= b then
 				local ab, ba = w(a, b), w(b, a)
 				local n = ab + ba
-				if n >= MIN_PAIR and WilsonLow(ab, n) > 0.5 then
-					score[a] = score[a] + 1
+				local clear = n >= MIN_PAIR
+				local aWins
+				if cur[a] < cur[b] then -- a is above b now: stays unless b clearly wins
+					aWins = not (clear and WilsonLow(ba, n) > OVERTURN)
+				else -- a is below b: moves up only if it clearly wins
+					aWins = clear and WilsonLow(ab, n) > OVERTURN
 				end
-				won[a], seen[a] = won[a] + ab, seen[a] + n
+				if aWins then score[a] = score[a] + 1 end
 			end
 		end
 	end
 	table.sort(names, function(a, b)
 		if score[a] ~= score[b] then return score[a] > score[b] end
-		local ra = seen[a] > 0 and WilsonLow(won[a], seen[a]) or 0.5
-		local rb = seen[b] > 0 and WilsonLow(won[b], seen[b]) or 0.5
-		if ra ~= rb then return ra > rb end
 		return cur[a] < cur[b]
 	end)
 	local order, k = {}, 1
@@ -742,6 +744,7 @@ end
 T.Swaps = Swaps
 
 local AUTO_EVERY = 25 -- new choices between automatic adjustments
+local AUTO_MIN = 100  -- after a fresh start, the order is left alone until then
 
 -- after a fight: if enough new choices came in and the learned order differs,
 -- apply it and say in one chat line what moved
@@ -749,7 +752,7 @@ function T:AutoAdapt()
 	if not self.db.autoAdapt then return end
 	local learn = self.db.learn
 	local n = learn.choices or 0
-	if n < self.LEARN_MIN then return end
+	if n < AUTO_MIN then return end
 	if n - (learn.lastAutoChoices or 0) < AUTO_EVERY then return end
 	learn.lastAutoChoices = n
 	local order = self:LearnedOrder()
