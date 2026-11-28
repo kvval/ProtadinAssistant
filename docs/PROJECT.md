@@ -85,6 +85,7 @@ In memory the addon uses spell names (client language). On disk (`ProtadinAssist
 3. A locale check confirms that every `L[...]` used in the code is in `KEYS` and that every locale has all keys with matching `%s` / `%d`.
 4. Targeted model tests in `tools/` (priority list, learning, decay, situational spells, auto-adapt, seal, hand-over, links, mana, range, loading screens, food, idle/pre-pull, storage by ID, grid).
 5. Then `tools/install.sh` puts it into the game for an in-game check.
+6. Performance: anything that runs every frame or on frequent events must not create tables (client API answers like `GetSpellCooldown`, `GetSpellPowerCost`, aura data are new tables each call). Check in game with `/protadin mem` (memory growth over 10 s plus garbage per function); targets: ~0 KB/s out of combat, under ~10 KB/s in combat. The mock harness can't measure this: its own method stubs allocate.
 
 ## History (short)
 
@@ -132,6 +133,8 @@ GitHub repo settings worth having (author does them in the browser): About with 
 - [x] Camp Benefits spell ID 1229741 hardcoded in `Data.lua` (seen in game 2026-11-28).
 - [x] `release.yml` runs `tools/run_all.sh` before the packager; first real run with v1.0.7 passed. Step results: `curl https://api.github.com/repos/kvval/ProtadinAssistant/actions/runs/<id>/jobs`.
 - [ ] Optional: update `actions/checkout` to a Node 24 version when the deprecation warning starts to matter.
+- [ ] Optional: in-combat garbage (~7 KB/s) could be cut ~30% more (buff scan, learning on cast) - not worth it now (author agreed to stop at 7 KB/s).
+- [ ] Watch in game: how often the sticky order (1.0.8) changes the priority; tune OVERTURN if it's too rare.
 - Ideas, not planned: the same addon for other classes (warrior tank and shaman fit best). Rejected ideas: GCD sweep on the hint, "expiring soon" colours, error-catch wrapper, minimap learning-status line, undo button.
 
 ## Working agreements
@@ -142,3 +145,4 @@ GitHub repo settings worth having (author does them in the browser): About with 
 - Don't promise in public texts what hasn't been verified in game.
 - Public texts: say what the addon does (no lists of what it doesn't), capitalize buff and feature names, keep it short.
 - Talk to the author on "ты".
+- CurseForge page: the author edits it himself (removed "No other addons needed." on 2026-11-28); keep `docs/curseforge-description.md` in sync with what he has there.
